@@ -18,6 +18,7 @@
 %token STRING THREE_DOTS TILDE TRUE TRY VBAREQUAL WHILE WITH YIELD
 
 %locations
+%define api.prefix {py30}
 
 
 %start start

@@ -19,6 +19,7 @@
 %token TRY VBAREQUAL WHILE WITH YIELD
 
 %locations
+%define api.prefix {py35}
 
 
 %start start

@@ -17,7 +17,7 @@
 %token SLASHEQUAL STAR STAREQUAL STRING TILDE TRY VBAREQUAL WHILE
 
 %locations
-
+%define api.prefix {py20}
 
 %start start
 

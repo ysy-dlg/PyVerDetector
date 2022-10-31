@@ -31,7 +31,7 @@
  */
 
 #include "stdbool.h"
-#include "parse.tab.h"
+#include "3.3.tab.h"
 
 /* Code to handle locations */
 /* This is taken from Chapter 8 - flex & bison by John Levine */
@@ -87,6 +87,7 @@ static int numbers = 0;
 
 %option yylineno
 %option noyywrap
+%option prefix="py33"
 
 number         {integer}|{floatnumber}|{imagnumber}
 

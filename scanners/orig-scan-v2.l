@@ -30,7 +30,7 @@
  * https://docs.python.org/2.7/reference/index.html
  */
 #include "stdbool.h"
-#include "parse.tab.h"
+#include "2.7.2.tab.h"
 
 
 /* Code to handle locations */
@@ -87,6 +87,7 @@ static int numbers = 0;
 
 %option yylineno
 %option noyywrap
+%option prefix="py272"
 
 
 number    {integer}|{longinteger}|{floatnumber}|{imagnumber}

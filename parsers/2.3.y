@@ -18,7 +18,7 @@
 %token TILDE TRY VBAREQUAL WHILE YIELD
 
 %locations
-
+%define api.prefix {py22}
 
 %start start
 

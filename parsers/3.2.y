@@ -19,6 +19,7 @@
 %token YIELD
 
 %locations
+%define api.prefix {py32}
 
 
 %start start
