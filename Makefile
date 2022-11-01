@@ -6,14 +6,20 @@ YFLAGS=
 BUILD_DIR=build
 ORIG_SCANNER_V2=scanners/orig-scan-v2.l   # 2.7.2 scanner
 ORIG_SCANNER_V3=scanners/orig-scan-v3.l   # 3.3.0 scanner
-VERSIONS=2.0  2.2  2.3  2.4.3  2.4  2.5  2.6  2.7.2  2.7  3.0  3.1  3.2  3.3  3.5  3.6
+#VERSIONS=2.0  2.2  2.3  2.4.3  2.4  2.5  2.6  2.7.2  2.7  3.0  3.1  3.2  3.3  3.5  3.6
+VERSIONS=3.3
 PARSERS=$(VERSIONS:%=$(BUILD_DIR)/%.tab.c)
 SCANNERS=$(VERSIONS:%=$(BUILD_DIR)/%.lex.c)
+TARGET=pycomply
 
 .PHONY: all clean
 .SILENT:
 
-all: $(SCANNERS) $(PARSERS)
+all: $(BUILD_DIR)/$(TARGET)
+
+$(BUILD_DIR)/$(TARGET): pycomply.c scanner.c $(SCANNERS) $(PARSERS)
+	$(CC) $(CFLAGS) -I . -I $(BUILD_DIR) -o $@ $^
+
 
 $(BUILD_DIR)/%.tab.c: parsers/%.y
 	echo "[YACC] $@"
