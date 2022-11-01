@@ -1,0 +1,18 @@
+{
+    "name": "Python version detector",
+    "description": "Python version detector for Python code snippets on Stack Overflow.",
+    "version": "1.0",
+    "manifest_version": 3,
+
+    "content_scripts": [{
+        "css": ["styles.css"],
+        "js": ["content.js"],
+        "matches": ["https://stackoverflow.com/*"]
+    }],
+
+    "icons": { 
+        "16": "assets/icon.png",
+        "48": "assets/icon.png",
+        "128": "assets/icon.png" 
+    }
+}
