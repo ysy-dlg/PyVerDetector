@@ -1,29 +1,29 @@
-const CODE_BLOCKS = document.getElementsByTagName("pre")
-const BODY = document.body
+const CODE_BLOCKS = document.getElementsByTagName("pre");
+const BODY = document.body;
 
 // add buttons to all code blocks
 for (let block of CODE_BLOCKS) {
-    addSelect(block)
+    addSelect(block);
 }
 
 document.querySelectorAll('select').forEach((val, ind) => {
     val.id = "select" + (ind + 1);
-    addOption(val.id)
+    addOption(val.id);
   })
 
-// adds the button with functionality to the block
+// adds the select with functionality to the block
 function addSelect(block) {
-    let text = block.firstChild.textContent
-    let select = document.createElement("select")
+    let text = block.firstChild.textContent;
+    let select = document.createElement("select");
     document.body.appendChild(select);
 
     // add the functionality and set the style
-    select.addEventListener("click", () => navigator.clipboard.writeText(text))
-    setSelectStyle(select, block.getBoundingClientRect())
+    select.addEventListener("click", () => navigator.clipboard.writeText(text));
+    setSelectStyle(select, block.getBoundingClientRect());
 
-    // adds a newline for spacing, add the button
-    block.innerHTML += "<br>\n"
-    block.appendChild(select)
+    // adds a newline for spacing, add the select
+    block.innerHTML += "<br>\n";
+    block.appendChild(select);
 }
 
 function addOption(id){
@@ -42,12 +42,13 @@ function addOption(id){
     obj.options.add(new Option("ver3.6","36"));
     }
 
-// sets the style for the button and position with the bounding box of the block
+// sets the style for the select and position with the bounding box of the block
 function setSelectStyle(select, boundingBox) {
-    select.innerHTML = "Display"
-    select.classList.add("__so-display-button")
+    select.innerHTML = "Display";
+    select.classList.add("__so-select");
 
     // using stack overflow style
-    select.classList.add("s-btn")
-    select.classList.add("s-btn__primary")
+    select.classList.add("s-btn");
+    select.classList.add("s-btn__primary");
 }
+
