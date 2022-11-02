@@ -29,17 +29,17 @@ function addSelect(block) {
 function addOption(id){
     var obj=document.getElementById(id);
     obj.options.add(new Option("Python Version",""));
-    obj.options.add(new Option("ver2.0","2.0"));
-    obj.options.add(new Option("ver2.2","2.2"));
-    obj.options.add(new Option("ver2.4","2.4"));
-    obj.options.add(new Option("ver2.5","2.5"));
-    obj.options.add(new Option("ver2.6","2.6"));
-    obj.options.add(new Option("ver2.7","2.7"));
-    obj.options.add(new Option("ver3.0","3.0"));
-    obj.options.add(new Option("ver3.1","3.1"));
-    obj.options.add(new Option("ver3.3","3.3"));
-    obj.options.add(new Option("ver3.5","3.5"));
-    obj.options.add(new Option("ver3.6","3.6"));
+    obj.options.add(new Option("ver2.0","20"));
+    obj.options.add(new Option("ver2.2","22"));
+    obj.options.add(new Option("ver2.4","24"));
+    obj.options.add(new Option("ver2.5","25"));
+    obj.options.add(new Option("ver2.6","26"));
+    obj.options.add(new Option("ver2.7","27"));
+    obj.options.add(new Option("ver3.0","30"));
+    obj.options.add(new Option("ver3.1","31"));
+    obj.options.add(new Option("ver3.3","33"));
+    obj.options.add(new Option("ver3.5","35"));
+    obj.options.add(new Option("ver3.6","36"));
     }
 
 // sets the style for the button and position with the bounding box of the block
