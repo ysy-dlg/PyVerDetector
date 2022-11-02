@@ -17,19 +17,20 @@ TARGET=pycomply
 
 all: $(BUILD_DIR)/$(TARGET)
 
-$(BUILD_DIR)/$(TARGET): pycomply.c scanner.c $(SCANNERS) $(PARSERS)
+$(BUILD_DIR)/$(TARGET): pycomply.c scanner.c $(SCANNERS)
+	echo "[CC] $@"
 	$(CC) $(CFLAGS) -I . -I $(BUILD_DIR) -o $@ $^
 
 
 $(BUILD_DIR)/%.tab.c: parsers/%.y
 	echo "[YACC] $@"
 	mkdir -p $(dir $@)
-	bison -o $@ -d $(LFLAGS)  $<
+	bison -o $@ --defines=$(patsubst %.c,%.h,$@) $(YFLAGS)  $<
 
 $(BUILD_DIR)/%.lex.c: $(BUILD_DIR)/%.l
 	echo "[LEX] $@"
 	mkdir -p $(dir $@)
-	flex -o $@ $(YFLAGS) $<
+	flex -o $@ --header-file=$(patsubst %.c,%.h,$@) $(LFLAGS) $<
 
 ##### MANIPULATE THE SCANNERS AND GENERATE ALL THE VARIANTS #####
 
