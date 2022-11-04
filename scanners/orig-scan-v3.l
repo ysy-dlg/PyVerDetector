@@ -34,7 +34,7 @@
  `--------------------------------------------------------------*/
 
 #include "scanner.h"
-#include "tokens.h"
+#include "3.3.tab.h"
 
 #define YY_USER_ACTION yyextra->col_no += yyleng;
 

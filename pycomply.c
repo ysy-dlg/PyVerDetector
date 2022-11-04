@@ -3,14 +3,21 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-  // this will be replaced by the Makefile with the correct values
+// this line will be replaced by the Makefile with the correct values
 const int NUM_VERSIONS = 1;
 
-#define CHECK_VERSION(X) init_state(t_state, input); \
-                         py ## X ## lex_init_extra(t_state, &scanner); \
-                         while((token = py ## X ## _next_token(scanner)) > 0); \
-                         py ## X ## lex_destroy(scanner); \
-                         deinit_state(t_state);
+#define CHECK_VERSION(X)                                                       \
+  init_state(t_state, input);                                                  \
+  py##X##lex_init_extra(t_state, &scanner);                                    \
+  py##X##pstate* ps = py##X##pstate_new();                                     \
+  do                                                                           \
+  {                                                                            \
+    token = py##X##_next_token(scanner);                                       \
+    status = py##X##push_parse(ps, token, NULL);                               \
+  } while(status == YYPUSH_MORE);                                              \
+  py##X##pstate_delete(ps);                                                    \
+  py##X##lex_destroy(scanner);                                                 \
+  deinit_state(t_state);
 
 void check_compliance(const char* input)
 {
@@ -18,13 +25,14 @@ void check_compliance(const char* input)
   TokenState* t_state = (TokenState*)malloc(sizeof(TokenState));
   void* scanner;
   int token;
+  int status;
   const int results[NUM_VERSIONS];
   if(t_state == NULL)
   {
     // TODO: handle error
     exit(EXIT_FAILURE);
   }
-  // this will be replaced by the Makefile with the correct values
+  // this line will be replaced by the Makefile with the correct values
   CHECK_VERSION(0);
   free(t_state);
 }
