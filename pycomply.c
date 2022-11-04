@@ -1,44 +1,44 @@
 #include "scanner.h"
-#include "3.3.lex.h"
+#include "versions.h"
 #include <stdio.h>
 #include <stdlib.h>
 
-extern int py33_next_token(void*);
+  // this will be replaced by the Makefile with the correct values
+const int NUM_VERSIONS = 1;
 
-int check_compliance(int version, const char* input)
+#define CHECK_VERSION(X) init_state(t_state, input); \
+                         py ## X ## lex_init_extra(t_state, &scanner); \
+                         while((token = py ## X ## _next_token(scanner)) > 0); \
+                         py ## X ## lex_destroy(scanner); \
+                         deinit_state(t_state);
+
+void check_compliance(const char* input)
 {
   int retval;
   TokenState* t_state = (TokenState*)malloc(sizeof(TokenState));
   void* scanner;
+  int token;
+  const int results[NUM_VERSIONS];
   if(t_state == NULL)
   {
     // TODO: handle error
     exit(EXIT_FAILURE);
   }
-  init_state(t_state, input);
-  // ADD SWITCH FOR VERSIONS HERE
-  py33lex_init_extra(t_state, &scanner);
-  int token;
-  while((token = py33_next_token(scanner)) > 0)
-    ;
-  py33lex_destroy(scanner);
-  //
-  deinit_state(t_state);
+  // this will be replaced by the Makefile with the correct values
+  CHECK_VERSION(0);
   free(t_state);
-  return retval;
 }
 
 int main(int argc, char* argv[])
 {
-  if(argc != 3)
+  if(argc != 2)
   {
-    printf("usage: ./pycomply <version> <filename>\n");
+    printf("usage: ./pycomply <filename>\n");
     exit(EXIT_FAILURE);
   }
   else
   {
-    int version = atoi(argv[1]);
-    FILE* fin = fopen(argv[2], "r");
+    FILE* fin = fopen(argv[1], "r");
     fseek(fin, 0, SEEK_END);
     int fsize = ftell(fin);
     fseek(fin, 0, SEEK_SET);
@@ -50,7 +50,7 @@ int main(int argc, char* argv[])
     }
     fread(input, sizeof(char), fsize, fin);
     fclose(fin);
-    check_compliance(version, input);
+    check_compliance(input);
     free(input);
   }
 }
