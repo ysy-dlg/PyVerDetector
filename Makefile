@@ -1,3 +1,5 @@
+CC=gcc
+CFLAGS=-O0 -ggdb3
 LEX=flex
 YACC=bison
 LFLAGS=
@@ -119,6 +121,7 @@ clean:
 	$(RM) -fd $(BUILD_DIR)/*.l
 	$(RM) -fd $(BUILD_DIR)/*.c
 	$(RM) -fd $(BUILD_DIR)/*.h
+	$(RM) -fd $(BUILD_DIR)/$(TARGET)
 	$(RM) -fd $(BUILD_DIR)
 
 

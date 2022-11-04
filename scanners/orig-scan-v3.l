@@ -240,6 +240,11 @@ bom_marker  [\xEF][\xBB][\xBF]
 int py33_next_token(yyscan_t scanner)
 {
   TokenState* tok = yyget_extra(scanner);
+  if(!tok->assigned_to_yyin)
+  {
+    yy_scan_buffer(tok->input, tok->input_len, scanner);
+    tok->assigned_to_yyin = true;
+  }
   int token = NO_TOKEN;
   if(tok->seen_endmarker)
     yyterminate();

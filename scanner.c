@@ -2,11 +2,32 @@
 #include <stdlib.h>
 #include <string.h>
 
-void init_state(TokenState* t_state)
+int init_state(TokenState* t_state, const char* input)
 {
+  int input_len = strlen(input);
   memset(t_state, 0, sizeof(TokenState));
-  t_state->pending_token = NO_TOKEN;
-  t_state->indstack[0] = FIRST_COLUMN;
+  t_state->input = (char*)calloc(input_len + 2, sizeof(char));
+  if(t_state->input != NULL)
+  {
+    strncpy(t_state->input, input, input_len);
+    t_state->input_len = input_len + 2;
+    t_state->pending_token = NO_TOKEN;
+    t_state->indstack[0] = FIRST_COLUMN;
+    return 0;
+  }
+  else
+  {
+    return -1;
+  }
+}
+
+void deinit_state(TokenState* t_state)
+{
+  if(t_state->input != NULL)
+  {
+    free(t_state->input);
+    t_state->input = NULL;
+  }
 }
 
 void left_enclose(TokenState* t_state) { ++t_state->level; }
