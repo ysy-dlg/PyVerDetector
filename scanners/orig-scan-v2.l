@@ -34,7 +34,7 @@
  `--------------------------------------------------------------*/
 
 #include "scanner.h"
-#include "2.7.2.h"
+#include "2.7.2.tab.h"
 
 #define YY_USER_ACTION yyextra->col_no += yyleng;
 
@@ -124,120 +124,120 @@ bom_marker  [\xEF][\xBB][\xBF]
 
 "print_function"            { /* Hack to use 3.x print-style function call */  
                               yyextra->print_name_hack = yyextra->seen_future; 
-                              return NAME; }
-"__future__"                { yyextra->seen_future = true; return NAME; }
+                              return PY272_NAME; }
+"__future__"                { yyextra->seen_future = true; return PY272_NAME; }
 
 {bom_marker}                { check_bom(yylineno, yyextra->col_no); }
 
-{ws}*{comment}?{newline}    { if (explicit_newline(yyextra)) return NEWLINE; }
+{ws}*{comment}?{newline}    { if (explicit_newline(yyextra)) return PY272_NEWLINE; }
 
 "\\"{newline}               {  yyextra->cont_line = true;  mark_new_line(yyextra); /* Explicit line joining: throw it away */ ;  }
 
 
 {stringprefix}?"'''"        { mark_long_string_start(yyextra, yylineno); BEGIN(LONG_STRING); }
-<LONG_STRING>"'''"          { mark_long_string_end(yyextra); BEGIN(INITIAL); return STRING; }
+<LONG_STRING>"'''"          { mark_long_string_end(yyextra); BEGIN(INITIAL); return PY272_STRING; }
 
 {stringprefix}?"\"\"\""     { mark_long_string_start(yyextra, yylineno); BEGIN(LONG_STRING2); }
-<LONG_STRING2>"\"\"\""      { mark_long_string_end(yyextra); BEGIN(INITIAL); return STRING; }
+<LONG_STRING2>"\"\"\""      { mark_long_string_end(yyextra); BEGIN(INITIAL); return PY272_STRING; }
 
 <LONG_STRING,LONG_STRING2>{newline}    { mark_new_line(yyextra); }
 <LONG_STRING,LONG_STRING2>{escapeseq}  { ; }
 <LONG_STRING,LONG_STRING2>.            { ; }
 <LONG_STRING,LONG_STRING2><<EOF>>      { display_error("unterminated long string at EOF"); }
 
-{string}   { return STRING; }
+{string}   { return PY272_STRING; }
 
 
-"("        { left_enclose(yyextra);  return LPAR; }
-")"        { right_enclose(yyextra); return RPAR; }
-"["        { left_enclose(yyextra);  return LSQB;  }
-"]"        { right_enclose(yyextra); return RSQB; }
-"{"        { left_enclose(yyextra);  return LBRACE; }
-"}"        { right_enclose(yyextra); return RBRACE; }
+"("        { left_enclose(yyextra);  return PY272_LPAR; }
+")"        { right_enclose(yyextra); return PY272_RPAR; }
+"["        { left_enclose(yyextra);  return PY272_LSQB;  }
+"]"        { right_enclose(yyextra); return PY272_RSQB; }
+"{"        { left_enclose(yyextra);  return PY272_LBRACE; }
+"}"        { right_enclose(yyextra); return PY272_RBRACE; }
 
-":"        { return COLON; }
-","        { return COMMA; }
-";"        { return SEMI; }
+":"        { return PY272_COLON; }
+","        { return PY272_COMMA; }
+";"        { return PY272_SEMI; }
 
-"+"        { return PLUS; }
-"-"        { return MINUS; }
-"*"        { return STAR; }
-"/"        { return SLASH; }
+"+"        { return PY272_PLUS; }
+"-"        { return PY272_MINUS; }
+"*"        { return PY272_STAR; }
+"/"        { return PY272_SLASH; }
 
-"<"        { return LESS; }
-">"        { return GREATER; }
-"="        { return EQUAL; }
+"<"        { return PY272_LESS; }
+">"        { return PY272_GREATER; }
+"="        { return PY272_EQUAL; }
 
-"."        { return DOT; }
-"%"        { return PERCENT; }
-"`"        { return BACKQUOTE; }
+"."        { return PY272_DOT; }
+"%"        { return PY272_PERCENT; }
+"`"        { return PY272_BACKQUOTE; }
 
-"=="       { return EQEQUAL; }
-"!="       { return NOTEQUAL; }
-"<="       { return LESSEQUAL; }
-">="       { return GREATEREQUAL; }
-"<>"       { return GRLT; }
+"=="       { return PY272_EQEQUAL; }
+"!="       { return PY272_NOTEQUAL; }
+"<="       { return PY272_LESSEQUAL; }
+">="       { return PY272_GREATEREQUAL; }
+"<>"       { return PY272_GRLT; }
 
-"~"        { return TILDE; }
-"^"        { return CIRCUMFLEX; }
-"<<"       { return LEFTSHIFT; }
-">>"       { return RIGHTSHIFT; }
-"**"       { return DOUBLESTAR; }
+"~"        { return PY272_TILDE; }
+"^"        { return PY272_CIRCUMFLEX; }
+"<<"       { return PY272_LEFTSHIFT; }
+">>"       { return PY272_RIGHTSHIFT; }
+"**"       { return PY272_DOUBLESTAR; }
 
-"+="       { return PLUSEQUAL; }
-"-="       { return MINEQUAL; }
-"*="       { return STAREQUAL; }
-"/="       { return SLASHEQUAL; }
-"%="       { return PERCENTEQUAL; }
-"&="       { return AMPEREQUAL; }
-"|"        { return BAR; }
-"|="       { return VBAREQUAL; }
-"^="       { return CIRCUMFLEXEQUAL; }
-"<<="      { return LEFTSHIFTEQUAL; }
-">>="      { return RIGHTSHIFTEQUAL; }
-"**="      { return DOUBLESTAREQUAL; }
-"//"       { return DOUBLESLASH; }
-"//="      { return DOUBLESLASHEQUAL; }
+"+="       { return PY272_PLUSEQUAL; }
+"-="       { return PY272_MINEQUAL; }
+"*="       { return PY272_STAREQUAL; }
+"/="       { return PY272_SLASHEQUAL; }
+"%="       { return PY272_PERCENTEQUAL; }
+"&="       { return PY272_AMPEREQUAL; }
+"|"        { return PY272_BAR; }
+"|="       { return PY272_VBAREQUAL; }
+"^="       { return PY272_CIRCUMFLEXEQUAL; }
+"<<="      { return PY272_LEFTSHIFTEQUAL; }
+">>="      { return PY272_RIGHTSHIFTEQUAL; }
+"**="      { return PY272_DOUBLESTAREQUAL; }
+"//"       { return PY272_DOUBLESLASH; }
+"//="      { return PY272_DOUBLESLASHEQUAL; }
 
-"@"        { return AT; }
+"@"        { return PY272_AT; }
 
-"and"      { return AND; }
-"&"        { return AMPERSAND; }
-"not"      { return NOT; }
-"or"       { return OR; }
-"as"       { return AS; }
-"assert"   { return ASSERT; }
-"break"    { return BREAK; }
-"class"    { return CLASS; }
-"continue" { return CONTINUE; }
-"def"      { return DEF; }
-"del"      { return DEL; }
-"elif"     { return ELIF; }
-"else"     { return ELSE; }
-"except"   { return EXCEPT; }
-"exec"     { return EXEC; }
-"finally"  { return FINALLY; }
-"for"      { return FOR; }
-"from"     { return FROM; }
-"global"   { return GLOBAL; }
-"if"       { return IF; }
-"import"   { return IMPORT; }
-"in"       { return IN; }
-"is"       { return IS; }
-"lambda"   { return LAMBDA; }
-"pass"     { return PASS; }
-"print"    { if (yyextra->print_name_hack) return NAME; else return PRINT; }
-"raise"    { return RAISE; }
-"return"   { return RETURN; }
-"try"      { return TRY; }
-"while"    { return WHILE; }
-"with"     { return WITH; }
-"yield"    { return YIELD; }
+"and"      { return PY272_AND; }
+"&"        { return PY272_AMPERSAND; }
+"not"      { return PY272_NOT; }
+"or"       { return PY272_OR; }
+"as"       { return PY272_AS; }
+"assert"   { return PY272_ASSERT; }
+"break"    { return PY272_BREAK; }
+"class"    { return PY272_CLASS; }
+"continue" { return PY272_CONTINUE; }
+"def"      { return PY272_DEF; }
+"del"      { return PY272_DEL; }
+"elif"     { return PY272_ELIF; }
+"else"     { return PY272_ELSE; }
+"except"   { return PY272_EXCEPT; }
+"exec"     { return PY272_EXEC; }
+"finally"  { return PY272_FINALLY; }
+"for"      { return PY272_FOR; }
+"from"     { return PY272_FROM; }
+"global"   { return PY272_GLOBAL; }
+"if"       { return PY272_IF; }
+"import"   { return PY272_IMPORT; }
+"in"       { return PY272_IN; }
+"is"       { return PY272_IS; }
+"lambda"   { return PY272_LAMBDA; }
+"pass"     { return PY272_PASS; }
+"print"    { if (yyextra->print_name_hack) return PY272_NAME; else return PY272_PRINT; }
+"raise"    { return PY272_RAISE; }
+"return"   { return PY272_RETURN; }
+"try"      { return PY272_TRY; }
+"while"    { return PY272_WHILE; }
+"with"     { return PY272_WITH; }
+"yield"    { return PY272_YIELD; }
 
-{number}   { return NUMBER; }
-{name}     { return NAME; }
+{number}   { return PY272_NUMBER; }
+{name}     { return PY272_NAME; }
 
-<<EOF>>    { handle_eof(yyextra); return ENDMARKER; }
+<<EOF>>    { handle_eof(yyextra); return PY272_ENDMARKER; }
 
 <*>.       { display_error("unknown character"); }
 
@@ -259,12 +259,12 @@ int py272_next_token(yyscan_t scanner)
   if(tok->pendin < 0)
   {
     tok->pendin++;
-    token = DEDENT;
+    token = PY272_DEDENT;
   }
   else if(tok->pendin > 0)
   {
     tok->pendin--;
-    token = INDENT;
+    token = PY272_INDENT;
   }
   /* Next check for a pending token */
   else if(tok->pending_token != NO_TOKEN)
@@ -276,7 +276,7 @@ int py272_next_token(yyscan_t scanner)
   else
   {
     token = yylex(scanner);
-    if(token == NEWLINE)
+    if(token == PY272_NEWLINE)
     {
       tok->atbol = true;
     }
@@ -289,7 +289,7 @@ int py272_next_token(yyscan_t scanner)
     }
     /* if we get here then nothing is pending, so just return the token */
   }
-  if(token == ENDMARKER)
+  if(token == PY272_ENDMARKER)
     tok->seen_endmarker = true; /* Wrap up the next time around */
   return token;
 }

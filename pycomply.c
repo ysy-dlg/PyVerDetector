@@ -9,13 +9,13 @@ const int NUM_VERSIONS = 1;
 #define CHECK_VERSION(X)                                                       \
   init_state(t_state, input);                                                  \
   py##X##lex_init_extra(t_state, &scanner);                                    \
-  py##X##pstate* ps = py##X##pstate_new();                                     \
+  py##X##pstate* ps##X = py##X##pstate_new();                                  \
   do                                                                           \
   {                                                                            \
     token = py##X##_next_token(scanner);                                       \
-    status = py##X##push_parse(ps, token, NULL);                               \
+    status = py##X##push_parse(ps##X, token, NULL);                            \
   } while(status == YYPUSH_MORE);                                              \
-  py##X##pstate_delete(ps);                                                    \
+  py##X##pstate_delete(ps##X);                                                 \
   py##X##lex_destroy(scanner);                                                 \
   deinit_state(t_state);
 
