@@ -67,7 +67,7 @@ nonzerodigit   [1-9]
 digit          [0-9]
 bindigit       [01]
 octdigit       [0-7]
-hexdigit       {digit}|[a-fA-F]
+hexdigit       [0-9a-fA-F]
 
 string        {stringprefix}?{stringbody}
 stringbody    {shortstring}
@@ -225,10 +225,8 @@ bom_marker  [\xEF][\xBB][\xBF]
 "with"     { return WITH; }
 "yield"    { return YIELD; }
 
-
-{name}     { return NAME; }
-
 {number}   { return NUMBER; }
+{name}     { return NAME; }
 
 <<EOF>>    { handle_eof(yyextra); return ENDMARKER; }
 

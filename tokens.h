@@ -85,3 +85,9 @@
 #define INDENT 85
 #define DEDENT 86
 #define THREE_DOTS 87
+#define BACKQUOTE 88
+#define ATEQ 89
+#define AWAIT 90
+#define ASYNC 91
+#define EXEC 92
+#define PRINT 93
