@@ -40,6 +40,7 @@ function addOption(id){
     obj.options.add(new Option("ver2.7.2", 272));
     obj.options.add(new Option("ver3.0", 30));
     obj.options.add(new Option("ver3.1", 31));
+    obj.options.add(new Option("ver3.2", 32));
     obj.options.add(new Option("ver3.3", 33));
     obj.options.add(new Option("ver3.5", 35));
     obj.options.add(new Option("ver3.6", 36));
