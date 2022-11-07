@@ -1,4 +1,5 @@
 #include "scanner.h"
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -7,7 +8,8 @@ int init_state(TokenState* t_state, const char* input)
   int input_len = strlen(input);
   memset(t_state, 0, sizeof(TokenState));
   t_state->input = (char*)calloc(input_len + 2, sizeof(char));
-  if(t_state->input != NULL)
+  t_state->last_error = (char*)calloc(1, sizeof(char));
+  if(t_state->input != NULL && t_state->last_error != NULL)
   {
     strncpy(t_state->input, input, input_len);
     t_state->input_len = input_len + 2;
@@ -23,6 +25,11 @@ int init_state(TokenState* t_state, const char* input)
 
 void deinit_state(TokenState* t_state)
 {
+  if(t_state->last_error != NULL)
+  {
+    free(t_state->last_error);
+    t_state->last_error = NULL;
+  }
   if(t_state->input != NULL)
   {
     free(t_state->input);
@@ -34,10 +41,10 @@ void left_enclose(TokenState* t_state) { ++t_state->level; }
 
 void right_enclose(TokenState* t_state) { --t_state->level; }
 
-void check_bom(int col_no, int line_no)
+void check_bom(TokenState* t_state, int line_no)
 {
-  if(line_no != 1 && col_no != 1)
-    display_error("unexpected BOM character");
+  if(line_no != 1 && t_state->col_no != 1)
+    set_error(t_state, "unexpected BOM character");
 }
 
 void mark_long_string_start(TokenState* t_state, int line_no)
@@ -69,14 +76,18 @@ void handle_eof(TokenState* t_state)
   t_state->atbol = true;  /* Triggers flushing of the indentation stack */
 }
 
-void display_error(const char* msg) {}
+void set_error(TokenState* t_state, const char* msg)
+{
+  free(t_state->last_error);
+  t_state->last_error = strdup(msg);
+}
 
 /* Pop the indentation stack until you get back to col, queue DEDENTs */
 void pop_indents(TokenState* t_state, int col)
 {
   if(t_state->indent < 0)
   {
-    display_error("(internal) indentation stack underflow");
+    set_error(t_state, "[INTERNAL ERROR] indentation stack underflow");
   }
   else
   {
@@ -89,7 +100,7 @@ void pop_indents(TokenState* t_state, int col)
     }
     else if(col > curr_indent)
     {
-      display_error("dedent is less than corresponding indent");
+      set_error(t_state, "dedent is less than corresponding indent");
     }
     /* else col == curr_indent, and we're done */
   }

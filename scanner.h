@@ -38,6 +38,7 @@ typedef struct token_state
   int long_string_start_line; /* Starting line for a multi-line string */
   int long_string_start_col;  /* Starting column for a multi-line string */
   char* input; /* Double ASCII-terminated input, used instead of yyin */
+  char* last_error;
   int input_len;
   bool assigned_to_yyin; /* true if the input has been assigned to yyin */
 } TokenState;
@@ -51,8 +52,8 @@ void mark_long_string_end(TokenState* t_state);
 void mark_new_line(TokenState* t_state);
 bool explicit_newline(TokenState* t_state);
 void handle_eof(TokenState* t_state);
-void check_bom(int line_no, int col_no);
-void display_error(const char* msg);
+void check_bom(TokenState* t_state, int col_no);
+void set_error(TokenState* t_state, const char* msg);
 /* Wrapper that calls push or pop as appropriate */
 void note_new_indent(TokenState* t_state);
 #endif

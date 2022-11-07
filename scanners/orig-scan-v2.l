@@ -127,7 +127,7 @@ bom_marker  [\xEF][\xBB][\xBF]
                               return PY272_NAME; }
 "__future__"                { yyextra->seen_future = true; return PY272_NAME; }
 
-{bom_marker}                { check_bom(yylineno, yyextra->col_no); }
+{bom_marker}                { check_bom(yyextra, yylineno); yyterminate();}
 
 {ws}*{comment}?{newline}    { if (explicit_newline(yyextra)) return PY272_NEWLINE; }
 
@@ -143,7 +143,7 @@ bom_marker  [\xEF][\xBB][\xBF]
 <LONG_STRING,LONG_STRING2>{newline}    { mark_new_line(yyextra); }
 <LONG_STRING,LONG_STRING2>{escapeseq}  { ; }
 <LONG_STRING,LONG_STRING2>.            { ; }
-<LONG_STRING,LONG_STRING2><<EOF>>      { display_error("unterminated long string at EOF"); }
+<LONG_STRING,LONG_STRING2><<EOF>>      { char msgbuffer[128]; snprintf(msgbuffer, sizeof(msgbuffer), "unterminated long string started at %d", yyextra->long_string_start_line); set_error(yyextra, msgbuffer); yyterminate();}
 
 {string}   { return PY272_STRING; }
 
@@ -239,7 +239,7 @@ bom_marker  [\xEF][\xBB][\xBF]
 
 <<EOF>>    { handle_eof(yyextra); return PY272_ENDMARKER; }
 
-<*>.       { display_error("unknown character"); }
+<*>.       { char msgbuffer[128]; snprintf(msgbuffer, sizeof(msgbuffer), "unexpected character %s", yytext); set_error(yyextra, msgbuffer); yyterminate();}
 
 
 %%
@@ -247,9 +247,11 @@ bom_marker  [\xEF][\xBB][\xBF]
 int py272_next_token(yyscan_t scanner)
 {
   TokenState* tok = yyget_extra(scanner);
+  /* First run, initialize buffer */
   if(!tok->assigned_to_yyin)
   {
     yy_scan_buffer(tok->input, tok->input_len, scanner);
+    yyset_lineno(1, scanner); // yylineno not initialised in reentrant parsers https://github.com/westes/flex/issues/60
     tok->assigned_to_yyin = true;
   }
   int token = NO_TOKEN;

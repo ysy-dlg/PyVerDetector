@@ -29,11 +29,16 @@ void string_destroy(String src);
   do                                                                           \
   {                                                                            \
     token = py##X##_next_token(scanner);                                       \
+    if(t_state->last_error[0] != 0x0)                                          \
+      break; /* bail out if lexer error */                                     \
     status = py##X##push_parse(parser, token, NULL);                           \
   } while(status == YYPUSH_MORE);                                              \
   string_append(&retval, "{\"version\":" #X);                                  \
   py##X##pstate_delete(parser);                                                \
   py##X##lex_destroy(scanner);                                                 \
+  string_append(&retval, ",\"error\":\"");                                     \
+  string_append(&retval, t_state->last_error);                                 \
+  string_append(&retval, "\"");                                                \
   deinit_state(t_state);                                                       \
   string_append(&retval, "},");
 
@@ -95,6 +100,7 @@ String string_new()
     // TODO: handle error
     exit(EXIT_FAILURE);
   }
+  c_str[0] = 0x0;
   String retval = {c_str, 0, STRING_INIT_LEN};
   return retval;
 }
