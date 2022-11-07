@@ -2,28 +2,48 @@
 #include "versions.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 // this line will be replaced by the Makefile with the correct values
 const int NUM_VERSIONS = 1;
+// minimum len for a string
+const int STRING_INIT_LEN = 4;
+
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+
+typedef struct string
+{
+  char* c_str;
+  uint32_t len;
+  uint32_t alloc;
+} String;
+
+String string_new();
+void string_append(String* dst, const char* src);
+void string_destroy(String src);
 
 #define CHECK_VERSION(X)                                                       \
   init_state(t_state, input);                                                  \
   py##X##lex_init_extra(t_state, &scanner);                                    \
-  py##X##pstate* ps##X = py##X##pstate_new();                                  \
+  parser = py##X##pstate_new();                                                \
   do                                                                           \
   {                                                                            \
     token = py##X##_next_token(scanner);                                       \
-    status = py##X##push_parse(ps##X, token, NULL);                            \
+    status = py##X##push_parse(parser, token, NULL);                           \
   } while(status == YYPUSH_MORE);                                              \
-  py##X##pstate_delete(ps##X);                                                 \
+  string_append(&retval, "{\"version\":" #X);                                  \
+  py##X##pstate_delete(parser);                                                \
   py##X##lex_destroy(scanner);                                                 \
-  deinit_state(t_state);
+  deinit_state(t_state);                                                       \
+  string_append(&retval, "},");
 
-void check_compliance(const char* input)
+String check_compliance(const char* input)
 {
-  int retval;
   TokenState* t_state = (TokenState*)malloc(sizeof(TokenState));
+  String retval = string_new();
+  string_append(&retval, "[");
   void* scanner;
+  void* parser;
   int token;
   int status;
   const int results[NUM_VERSIONS];
@@ -35,6 +55,8 @@ void check_compliance(const char* input)
   // this line will be replaced by the Makefile with the correct values
   CHECK_VERSION(0);
   free(t_state);
+  string_append(&retval, "]");
+  return retval;
 }
 
 int main(int argc, char* argv[])
@@ -58,7 +80,36 @@ int main(int argc, char* argv[])
     }
     fread(input, sizeof(char), fsize, fin);
     fclose(fin);
-    check_compliance(input);
+    String result = check_compliance(input);
     free(input);
+    printf("%s\n", result.c_str);
+    string_destroy(result);
   }
 }
+
+String string_new()
+{
+  char* c_str = (char*)malloc(STRING_INIT_LEN);
+  if(c_str == NULL)
+  {
+    // TODO: handle error
+    exit(EXIT_FAILURE);
+  }
+  String retval = {c_str, 0, STRING_INIT_LEN};
+  return retval;
+}
+
+void string_append(String* dst, const char* src)
+{
+  uint32_t len = strlen(src);
+  uint32_t required_len = dst->len + len + 1;
+  if(required_len > dst->alloc)
+  {
+    uint32_t new_len = MAX(required_len, dst->alloc * 2);
+    dst->c_str = (char*)realloc(dst->c_str, new_len);
+  }
+  strcat(dst->c_str, src);
+  dst->len += len;
+}
+
+void string_destroy(String dst) { free(dst.c_str); }
