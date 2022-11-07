@@ -31,10 +31,13 @@ function addOption(id){
     obj.options.add(new Option("Python Version",""));
     obj.options.add(new Option("ver2.0", 20));
     obj.options.add(new Option("ver2.2", 22));
+    obj.options.add(new Option("ver2.3", 23));
     obj.options.add(new Option("ver2.4", 24));
+    obj.options.add(new Option("ver2.4.3", 243));
     obj.options.add(new Option("ver2.5", 25));
     obj.options.add(new Option("ver2.6", 26));
     obj.options.add(new Option("ver2.7", 27));
+    obj.options.add(new Option("ver2.7.2", 272));
     obj.options.add(new Option("ver3.0", 30));
     obj.options.add(new Option("ver3.1", 31));
     obj.options.add(new Option("ver3.3", 33));
