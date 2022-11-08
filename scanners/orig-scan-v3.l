@@ -36,11 +36,13 @@
 #include "scanner.h"
 #include "3.3.tab.h"
 
-#define YY_USER_ACTION yyextra->col_no += yyleng;
+#define YY_USER_ACTION yyextra->first_line = yyextra->last_line;      \
+                       yyextra->first_col = yyextra->last_col; \
+                       yyextra->last_col += yyleng;
 
 %}
 
-%option yylineno noyywrap noinput nounput 8bit nodefault
+%option noyywrap noinput nounput 8bit nodefault
 %option reentrant
 %option extra-type="TokenState*"
 %option prefix="py33"
@@ -115,17 +117,17 @@ bom_marker  [\xEF][\xBB][\xBF]
 {comment}                   { ; }
 {spaces}                    { ; }
 
-{bom_marker}                { check_bom(yyextra, yylineno); yyterminate();}
+{bom_marker}                { check_bom(yyextra); yyterminate();}
 
 {ws}*{comment}?{newline}    { if (explicit_newline(yyextra)) return PY33_NEWLINE; }
 
 "\\"{newline}               {  yyextra->cont_line = true;  mark_new_line(yyextra); /* Explicit line joining: throw it away */ ;  }
 
 
-{stringprefix}?"'''"        { mark_long_string_start(yyextra, yylineno); BEGIN(LONG_STRING); }
+{stringprefix}?"'''"        { mark_long_string_start(yyextra); BEGIN(LONG_STRING); }
 <LONG_STRING>"'''"          { mark_long_string_end(yyextra); BEGIN(INITIAL); return PY33_STRING; }
 
-{stringprefix}?"\"\"\""     { mark_long_string_start(yyextra, yylineno); BEGIN(LONG_STRING2); }
+{stringprefix}?"\"\"\""     { mark_long_string_start(yyextra); BEGIN(LONG_STRING2); }
 <LONG_STRING2>"\"\"\""      { mark_long_string_end(yyextra); BEGIN(INITIAL); return PY33_STRING; }
 
 <LONG_STRING,LONG_STRING2>{newline}    { mark_new_line(yyextra); }
@@ -244,7 +246,6 @@ int py33_next_token(yyscan_t scanner)
   if(!tok->assigned_to_yyin)
   {
     yy_scan_buffer(tok->input, tok->input_len, scanner);
-    yyset_lineno(1, scanner); // yylineno not initialised in reentrant parsers https://github.com/westes/flex/issues/60
     tok->assigned_to_yyin = true;
   }
   int token = NO_TOKEN;
@@ -280,7 +281,7 @@ int py33_next_token(yyscan_t scanner)
       tok->atbol = false;
       note_new_indent(tok);
       tok->pending_token = token;
-      token = yylex(scanner);
+      token = py33_next_token(scanner);
     }
     /* if we get here then nothing is pending, so just return the token */
   }

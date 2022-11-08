@@ -1,13 +1,16 @@
 %define api.push-pull push
 %define api.pure full
 %define api.prefix {py272}
+%define parse.error verbose
+%parse-param{TokenState* t_state}
 
 %code top {
   #include <stdio.h>
+  #include <scanner.h>
   #include "2.7.2.tab.h"
 }
 %code {
-void py272error(const char* msg);
+void py272error(TokenState* t_state, const char* msg);
 }
 // 83 tokens, in alphabetical order:
 %token PY272_AMPEREQUAL PY272_AMPERSAND PY272_AND PY272_AS PY272_ASSERT PY272_AT PY272_BACKQUOTE PY272_BAR PY272_BREAK PY272_CIRCUMFLEX
@@ -573,6 +576,7 @@ star_COMMA_argument // Used in: arglist, star_COMMA_argument
 
 %%
 
-void py272error(const char* msg)
+void py272error(TokenState* t_state, const char* msg)
 {
+  set_error(t_state, msg);
 }

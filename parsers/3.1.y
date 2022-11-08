@@ -1,13 +1,16 @@
 %define api.push-pull push
 %define api.pure full
 %define api.prefix {py31}
+%define parse.error verbose
+%parse-param{TokenState* t_state}
 
 %code top {
   #include <stdio.h>
+  #include <scanner.h>
   #include "3.1.tab.h"
 }
 %code {
-void py31error(const char* msg);
+void py31error(TokenState* t_state, const char* msg);
 }
 
 // 86 tokens, in alphabetical order:
@@ -579,6 +582,7 @@ star_DOT_THREE_DOTS // Used in: import_from, star_DOT_THREE_DOTS
 
 %%
 
-void py31error(const char* msg)
+void py31error(TokenState* t_state, const char* msg)
 {
+  set_error(t_state, msg);
 }

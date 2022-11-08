@@ -1,13 +1,16 @@
 %define api.push-pull push
 %define api.pure full
 %define api.prefix {py36}
-
+%define parse.error verbose
+%parse-param{TokenState* t_state}
+ 
 %code top {
   #include <stdio.h>
+  #include <scanner.h>
   #include "3.6.tab.h"
 }
 %code {
-void py36error(const char* msg);
+void py36error(TokenState* t_state, const char* msg);
 }
 // 89 tokens, in alphabetical order:
 %token PY36_AMPEREQUAL PY36_AMPERSAND PY36_AND PY36_ARROW PY36_AS PY36_ASSERT PY36_ASYNC PY36_AT PY36_ATEQ PY36_AWAIT PY36_BAR
@@ -647,6 +650,7 @@ star_DOT_THREE_DOTS // Used in: import_from, star_DOT_THREE_DOTS
 
 %%
 
-void py36error(const char* msg)
+void py36error(TokenState* t_state, const char* msg)
 {
+  set_error(t_state, msg);
 }
