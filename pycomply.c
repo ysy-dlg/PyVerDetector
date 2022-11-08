@@ -1,5 +1,6 @@
 #include "scanner.h"
 #include "versions.h"
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -20,6 +21,7 @@ typedef struct string
 
 String string_new();
 void string_append(String* dst, const char* src);
+void string_append_number(String* dst, uint32_t num);
 void string_destroy(String src);
 
 #define CHECK_VERSION(X)                                                       \
@@ -38,7 +40,10 @@ void string_destroy(String src);
   py##X##lex_destroy(scanner);                                                 \
   string_append(&retval, ",\"error\":\"");                                     \
   string_append(&retval, t_state->last_error);                                 \
-  string_append(&retval, "\"");                                                \
+  string_append(&retval, "\",\"line\":");                                      \
+  string_append_number(&retval, (uint32_t)t_state->last_line);                 \
+  string_append(&retval, ",\"column\":");                                      \
+  string_append_number(&retval, (uint32_t)t_state->first_col);                 \
   deinit_state(t_state);                                                       \
   string_append(&retval, "},");
 
@@ -116,6 +121,46 @@ void string_append(String* dst, const char* src)
   }
   strcat(dst->c_str, src);
   dst->len += len;
+}
+
+// reverse a string
+void reverse(char str[], int length)
+{
+  int start = 0;
+  int end = length - 1;
+  while(start < end)
+  {
+    char tmp = *(str + start);
+    *(str + start) = *(str + end);
+    *(str + end) = tmp;
+    start++;
+    end--;
+  }
+}
+
+void string_append_number(String* dst, uint32_t num)
+{
+  // itoa implementation
+  char buf[11] = "\0";
+  if(num == 0)
+  {
+    buf[0] = '0';
+    buf[1] = 0x0;
+  }
+  else
+  {
+    int i = 0;
+    while(num != 0)
+    {
+      uint32_t rem = num % 10;
+      buf[i++] = (rem > 9) ? (rem - 10) + 'a' : rem + '0';
+      num = num / 10;
+    }
+    buf[i] = 0x0;
+    reverse(buf, i);
+  }
+  // append the itoa result to the string
+  string_append(dst, buf);
 }
 
 void string_destroy(String dst) { free(dst.c_str); }

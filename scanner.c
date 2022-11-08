@@ -15,6 +15,10 @@ int init_state(TokenState* t_state, const char* input)
     t_state->input_len = input_len + 2;
     t_state->pending_token = NO_TOKEN;
     t_state->indstack[0] = FIRST_COLUMN;
+    t_state->first_line = 1;
+    t_state->first_col = FIRST_COLUMN;
+    t_state->last_line = 1;
+    t_state->last_col = FIRST_COLUMN;
     return 0;
   }
   else
