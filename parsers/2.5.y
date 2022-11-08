@@ -1,13 +1,16 @@
 %define api.push-pull push
 %define api.pure full
 %define api.prefix {py25}
+%define parse.error verbose
+%parse-param{TokenState* t_state}
 
 %code top {
   #include <stdio.h>
+  #include <scanner.h>
   #include "2.5.tab.h"
 }
 %code {
-void py25error(const char* msg);
+void py25error(TokenState* t_state, const char* msg);
 }
 
 // 83 tokens, in alphabetical order:
@@ -560,6 +563,7 @@ star_argument_COMMA // Used in: arglist, star_argument_COMMA
 
 %%
 
-void py25error(const char* msg)
+void py25error(TokenState* t_state, const char* msg)
 {
+  set_error(t_state, msg);
 }

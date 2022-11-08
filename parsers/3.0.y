@@ -1,13 +1,16 @@
 %define api.push-pull push
 %define api.pure full
 %define api.prefix {py30}
+%define parse.error verbose
+%parse-param{TokenState* t_state}
 
 %code top {
   #include <stdio.h>
+  #include <scanner.h>
   #include "3.0.tab.h"
 }
 %code {
-void py30error(const char* msg);
+void py30error(TokenState* t_state, const char* msg);
 }
 
 
@@ -574,6 +577,7 @@ star_DOT_THREE_DOTS // Used in: import_from, star_DOT_THREE_DOTS
 
 %%
 
-void py30error(const char* msg)
+void py30error(TokenState* t_state, const char* msg)
 {
+  set_error(t_state, msg);
 }

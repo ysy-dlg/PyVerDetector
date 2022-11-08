@@ -31,7 +31,7 @@ void string_destroy(String src);
     token = py##X##_next_token(scanner);                                       \
     if(t_state->last_error[0] != 0x0)                                          \
       break; /* bail out if lexer error */                                     \
-    status = py##X##push_parse(parser, token, NULL);                           \
+    status = py##X##push_parse(parser, token, NULL, t_state);                  \
   } while(status == YYPUSH_MORE);                                              \
   string_append(&retval, "{\"version\":" #X);                                  \
   py##X##pstate_delete(parser);                                                \

@@ -1,13 +1,16 @@
 %define api.push-pull push
 %define api.pure full
 %define api.prefix {py243}
+%define parse.error verbose
+%parse-param{TokenState* t_state}
 
 %code top {
   #include <stdio.h>
+  #include <scanner.h>
   #include "2.4.3.tab.h"
 }
 %code {
-void py243error(const char* msg);
+void py243error(TokenState* t_state, const char* msg);
 }
 
 // 81 tokens, in alphabetical order:
@@ -516,7 +519,8 @@ star_argument_COMMA // Used in: arglist, star_argument_COMMA
 
 %%
 
-void py243error(const char* msg)
+void py243error(TokenState* t_state, const char* msg)
 {
+  set_error(t_state, msg);
 }
 

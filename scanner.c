@@ -125,7 +125,6 @@ void note_new_indent(TokenState* t_state)
 {
   int curr_indent = t_state->indstack[t_state->indent];
   int col = t_state->first_col;
-  printf("col %d\n", col);
   if(col > curr_indent)
     push_indent(t_state, col);
   else if(col < curr_indent)
