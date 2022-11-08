@@ -15,6 +15,9 @@ function addSelect(block) {
     let output_selected = document.createElement("div");
     let output_errorInfo = document.createElement("div");
     let output_other = document.createElement("div");
+    output_selected.style.backgroundColor="#CFECEC"; 
+    output_errorInfo.style.backgroundColor="#F9F400"; 
+    output_other.style.backgroundColor="#4CC417"; 
     let avaInfo = "";
     let errInfo = "";
     let otherInfo = "";
@@ -65,6 +68,7 @@ function addSelect(block) {
         otherInfo = otherAvailable(resultJson,seletedVersion);
         output_other.innerText = otherInfo;
 
+        block.innerHTML += "<br>\n";
         block.appendChild(output_selected);
         block.appendChild(output_errorInfo);
         block.appendChild(output_other);
@@ -109,6 +113,10 @@ function addSelect(block) {
 function setSelectStyle(select, boundingBox) {
     // select.innerHTML = "Display";
     select.classList.add("__so-select");
+    
+    //color
+    // select.style.backgroundColor="#E5E4E2"
+
 
     // using stack overflow style
     select.classList.add("s-btn");
