@@ -41,30 +41,36 @@ void left_enclose(TokenState* t_state) { ++t_state->level; }
 
 void right_enclose(TokenState* t_state) { --t_state->level; }
 
-void check_bom(TokenState* t_state, int line_no)
+void check_bom(TokenState* t_state)
 {
-  if(line_no != 1 && t_state->col_no != 1)
+  if(t_state->first_line != 1 && t_state->first_col != 1)
     set_error(t_state, "unexpected BOM character");
 }
 
-void mark_long_string_start(TokenState* t_state, int line_no)
+void mark_long_string_start(TokenState* t_state)
 {
-  t_state->long_string_start_line = line_no;
-  t_state->long_string_start_col = t_state->col_no;
+  t_state->long_string_start_line = t_state->first_line;
+  t_state->long_string_start_col = t_state->first_col;
 }
 
 void mark_long_string_end(TokenState* t_state)
 {
+  t_state->first_col = t_state->long_string_start_col;
+  t_state->first_line = t_state->long_string_start_line;
   t_state->long_string_start_line = t_state->long_string_start_col = 0;
 }
 
-void mark_new_line(TokenState* t_state) { t_state->col_no = FIRST_COLUMN; }
+void mark_new_line(TokenState* t_state)
+{
+  t_state->last_col = FIRST_COLUMN;
+  t_state->last_line += 1;
+}
 
 bool explicit_newline(TokenState* t_state)
 {
   bool is_explicit_newline =
       (t_state->level == 0) &&
-      (t_state->cont_line || (t_state->col_no > FIRST_COLUMN));
+      (t_state->cont_line || (t_state->first_col > FIRST_COLUMN));
   t_state->cont_line = false;
   mark_new_line(t_state);
   return is_explicit_newline;
@@ -73,7 +79,9 @@ bool explicit_newline(TokenState* t_state)
 void handle_eof(TokenState* t_state)
 {
   mark_new_line(t_state); /* Sets current indentation to left margin */
-  t_state->atbol = true;  /* Triggers flushing of the indentation stack */
+  t_state->last_col = FIRST_COLUMN;
+  t_state->first_col = FIRST_COLUMN;
+  t_state->atbol = true; /* Triggers flushing of the indentation stack */
 }
 
 void set_error(TokenState* t_state, const char* msg)
@@ -116,7 +124,8 @@ void push_indent(TokenState* t_state, int col)
 void note_new_indent(TokenState* t_state)
 {
   int curr_indent = t_state->indstack[t_state->indent];
-  int col = t_state->col_no;
+  int col = t_state->first_col;
+  printf("col %d\n", col);
   if(col > curr_indent)
     push_indent(t_state, col);
   else if(col < curr_indent)

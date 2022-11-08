@@ -22,7 +22,7 @@ $(BUILD_DIR)/$(TARGET): $(BUILD_DIR)/main.c scanner.c $(BUILD_DIR)/versions.h $(
 	echo "[CC] $@"
 	$(CC) $(CFLAGS) -I . -I $(BUILD_DIR) -o $@ $(filter %.c, $^)
 
-$(BUILD_DIR)/main.c: pycomply.c
+$(BUILD_DIR)/main.c: pycomply.c $(BUILD_DIR)/versions.h
 	echo "[GEN] $@"
 	mkdir -p $(dir $@)
 	sed -e '/^const int NUM_VERSIONS/cconst int NUM_VERSIONS=$(words $(VERSIONS));' $< > $@;

@@ -34,25 +34,28 @@ typedef struct token_state
                         */
   bool seen_future;    /* Importing future module? */
   bool print_name_hack; /* Treat print as a 3.x name? (o/w it is a keyword) */
-  int col_no;           /* current column */
-  int long_string_start_line; /* Starting line for a multi-line string */
-  int long_string_start_col;  /* Starting column for a multi-line string */
   char* input; /* Double ASCII-terminated input, used instead of yyin */
   char* last_error;
   int input_len;
   bool assigned_to_yyin; /* true if the input has been assigned to yyin */
+  int long_string_start_line;
+  int long_string_start_col;
+  int first_col;
+  int last_col;
+  int first_line;
+  int last_line;
 } TokenState;
 
 int init_state(TokenState* t_state, const char* input);
 void deinit_state(TokenState* t_state);
 void left_enclose(TokenState* t_state);
 void right_enclose(TokenState* t_state);
-void mark_long_string_start(TokenState* t_state, int line_no);
+void mark_long_string_start(TokenState* t_state);
 void mark_long_string_end(TokenState* t_state);
 void mark_new_line(TokenState* t_state);
 bool explicit_newline(TokenState* t_state);
 void handle_eof(TokenState* t_state);
-void check_bom(TokenState* t_state, int col_no);
+void check_bom(TokenState* t_state);
 void set_error(TokenState* t_state, const char* msg);
 /* Wrapper that calls push or pop as appropriate */
 void note_new_indent(TokenState* t_state);
