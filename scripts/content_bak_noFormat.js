@@ -1,8 +1,7 @@
 const CODE_BLOCKS = document.getElementsByTagName("pre");
-const BODY = document.body;
 
 
-// add buttons to all code blocks
+// add selectors to all code blocks
 for (let block of CODE_BLOCKS) {
     addSelect(block);
 }
@@ -11,7 +10,6 @@ for (let block of CODE_BLOCKS) {
 function addSelect(block) {
     let text = block.firstChild.textContent;
     let select = document.createElement("select");
-    // document.body.appendChild(select);
     let output_selected = document.createElement("div");
     let output_errorInfo = document.createElement("div");
     let output_other = document.createElement("div");
@@ -21,7 +19,7 @@ function addSelect(block) {
     let avaInfo = "";
     let errInfo = "";
     let otherInfo = "";
-    select.options.add(new Option("Python Version",""));
+    select.options.add(new Option("Select Python Version",""));
     select.options.add(new Option("ver2.0", 20));
     select.options.add(new Option("ver2.2", 22));
     select.options.add(new Option("ver2.3", 23));
@@ -74,46 +72,23 @@ function addSelect(block) {
         block.appendChild(output_other);
     });
 
-    // add the functionality and set the style
+    // copy
     select.addEventListener("click", function() {
         navigator.clipboard.writeText(text)
     });
 
-    setSelectStyle(select, block.getBoundingClientRect());
+    setSelectStyle(select);
 
     // adds a newline for spacing, add the select
     block.innerHTML += "<br>\n";
     block.appendChild(select);
 }
 
-// function addOption(id){
-//     var obj=document.getElementById(id);
-//     obj.options.add(new Option("Python Version",0));
-//     obj.options.add(new Option("ver2.0", 20));
-//     obj.options.add(new Option("ver2.2", 22));
-//     obj.options.add(new Option("ver2.3", 23));
-//     obj.options.add(new Option("ver2.4", 24));
-//     obj.options.add(new Option("ver2.4.3", 243));
-//     obj.options.add(new Option("ver2.5", 25));
-//     obj.options.add(new Option("ver2.6", 26));
-//     obj.options.add(new Option("ver2.7", 27));
-//     obj.options.add(new Option("ver2.7.2", 272));
-//     obj.options.add(new Option("ver3.0", 30));
-//     obj.options.add(new Option("ver3.1", 31));
-//     obj.options.add(new Option("ver3.2", 32));
-//     obj.options.add(new Option("ver3.3", 33));
-//     obj.options.add(new Option("ver3.5", 35));
-//     obj.options.add(new Option("ver3.6", 36));
-//     }
-  
 
 
 
-// sets the style for the select and position with the bounding box of the block
-function setSelectStyle(select, boundingBox) {
-    // select.innerHTML = "Display";
-    select.classList.add("__so-select");
-    
+// sets the style for the select
+function setSelectStyle(select) {  
     //color
     // select.style.backgroundColor="#E5E4E2"
 
