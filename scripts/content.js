@@ -1,8 +1,7 @@
 const CODE_BLOCKS = document.getElementsByTagName("pre");
-const BODY = document.body;
 
 
-// add buttons to all code blocks
+// add selectors to all code blocks
 for (let block of CODE_BLOCKS) {
     addSelect(block);
 }
@@ -11,14 +10,16 @@ for (let block of CODE_BLOCKS) {
 function addSelect(block) {
     let text = block.firstChild.textContent;
     let select = document.createElement("select");
-    // document.body.appendChild(select);
     let output_selected = document.createElement("div");
     let output_errorInfo = document.createElement("div");
     let output_other = document.createElement("div");
+    output_selected.style.backgroundColor="#CFECEC"; 
+    output_errorInfo.style.backgroundColor="#F9F400"; 
+    output_other.style.backgroundColor="#4CC417"; 
     let avaInfo = "";
     let errInfo = "";
     let otherInfo = "";
-    select.options.add(new Option("Python Version",""));
+    select.options.add(new Option("Select Python Version",""));
     select.options.add(new Option("ver2.0", 20));
     select.options.add(new Option("ver2.2", 22));
     select.options.add(new Option("ver2.3", 23));
@@ -65,50 +66,30 @@ function addSelect(block) {
         otherInfo = otherAvailable(resultJson,seletedVersion);
         output_other.innerText = otherInfo;
 
+        block.innerHTML += "<br>\n";
         block.appendChild(output_selected);
         block.appendChild(output_errorInfo);
         block.appendChild(output_other);
     });
 
-    // add the functionality and set the style
+    // copy
     select.addEventListener("click", function() {
-        navigator.clipboard.writeText(text)
+        let text_new = formatText(text);
+        navigator.clipboard.writeText(text_new);
     });
 
-    setSelectStyle(select, block.getBoundingClientRect());
+    setSelectStyle(select);
 
     // adds a newline for spacing, add the select
     block.innerHTML += "<br>\n";
     block.appendChild(select);
 }
 
-// function addOption(id){
-//     var obj=document.getElementById(id);
-//     obj.options.add(new Option("Python Version",0));
-//     obj.options.add(new Option("ver2.0", 20));
-//     obj.options.add(new Option("ver2.2", 22));
-//     obj.options.add(new Option("ver2.3", 23));
-//     obj.options.add(new Option("ver2.4", 24));
-//     obj.options.add(new Option("ver2.4.3", 243));
-//     obj.options.add(new Option("ver2.5", 25));
-//     obj.options.add(new Option("ver2.6", 26));
-//     obj.options.add(new Option("ver2.7", 27));
-//     obj.options.add(new Option("ver2.7.2", 272));
-//     obj.options.add(new Option("ver3.0", 30));
-//     obj.options.add(new Option("ver3.1", 31));
-//     obj.options.add(new Option("ver3.2", 32));
-//     obj.options.add(new Option("ver3.3", 33));
-//     obj.options.add(new Option("ver3.5", 35));
-//     obj.options.add(new Option("ver3.6", 36));
-//     }
-  
 
-
-
-// sets the style for the select and position with the bounding box of the block
-function setSelectStyle(select, boundingBox) {
-    // select.innerHTML = "Display";
-    select.classList.add("__so-select");
+// sets the style for the select
+function setSelectStyle(select) {  
+    //color
+    // select.style.backgroundColor="#E5E4E2"
 
     // using stack overflow style
     select.classList.add("s-btn");
@@ -118,7 +99,47 @@ function setSelectStyle(select, boundingBox) {
 
 // The code is copied directly from the terminal with the accompanying ">>>" and "..."
 function formatText(text){
-    return text;
+    let codeLines = [];
+    let codeLines_Formatted = [];
+    let keyStr1 = ">>>";
+    let keyStr2 = "...";
+    let text_new = "";
+    codeLines = text.split(/\n/); // Recognition by line feed or carriage return
+    // codeLines.forEach((item, index) => { // Delete empty items
+    //     if (!item) {
+    //         codeLines.splice(index, 1);
+    //         }
+    // })
+    let num = codeLines.length;
+    let i = 0;
+    for(i; i < num; i++){
+        let str = codeLines[i];
+        if(str.indexOf(keyStr1) == 0){
+            let str_new = str.slice(3);
+            codeLines_Formatted.push(str_new);
+            break;
+        }else{
+            codeLines_Formatted.push(str);
+        }
+    }
+
+    let num_new = codeLines.length - i - 1;
+    let j = i + 1;
+    for(j; j<num_new; j++){
+        let str = codeLines[j];
+        if(str.indexOf(keyStr1) == 0 || str.indexOf(keyStr2) == 0){
+            let str_new = str.slice(3);
+            codeLines_Formatted.push(str_new);
+        }else{
+            codeLines_Formatted.push("");
+        }
+
+    }
+
+
+    text_new = codeLines_Formatted.join("\n");
+
+    return text_new;
 }
 
 //Check if the selected version is available
@@ -141,7 +162,6 @@ function selectedAvailabilityInfo(resultJson,selectedVersion){
 }
 
 
-
 //Get the error line number, find the line, output [error: ERR_MSG in LINE]
 function getErrInfo(resultJson,selectedVersion){
     let errInfo = "error: ";
@@ -152,7 +172,6 @@ function getErrInfo(resultJson,selectedVersion){
     }
 return errInfo;
 }
-
 
 
 //Get other available versions
@@ -193,5 +212,4 @@ function otherAvailable(resultJson,selectedVersion){
     otherInfo = otherInfo + versionJoin;
     return otherInfo;
 }
-
 
