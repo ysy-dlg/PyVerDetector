@@ -74,8 +74,9 @@ function addSelect(block) {
 
     // copy
     select.addEventListener("click", function() {
-        let text_new = formatText(text);
-        navigator.clipboard.writeText(text_new);
+        let text_tmp = formatText(text);
+        let textFormatted = delIndent(text_tmp);
+        navigator.clipboard.writeText(textFormatted);
     });
 
     setSelectStyle(select);
@@ -104,7 +105,7 @@ function formatText(text){
     let keyStr1 = ">>>";
     let keyStr2 = "...";
     let text_new = "";
-    codeLines = text.split(/\n/); // Recognition by line feed or carriage return
+    codeLines = text.split(/\n/); // Recognition by line feed
     // codeLines.forEach((item, index) => { // Delete empty items
     //     if (!item) {
     //         codeLines.splice(index, 1);
@@ -213,3 +214,45 @@ function otherAvailable(resultJson,selectedVersion){
     return otherInfo;
 }
 
+
+//Remove the extra indent at the beginning of the line
+function delIndent(text){
+    let codeLines = [];
+    let codeLines_Formatted = [];
+    let text_new = "";
+    let indexArr = [];
+    codeLines = text.split(/\n/); // Recognition by line feed
+    let num = codeLines.length;
+    let i = 0;
+    for(i; i<num; i++){
+        let str = codeLines[i];
+        if(str.length > 0){
+            let index = str.search(/\S|$/)
+            indexArr.push(index);
+        }
+    }
+    let minIndent = arrayMin(indexArr);
+    let j = 0;
+    for(j; j<num; j++){
+        let str = codeLines[j];
+        if(str.length > 0){
+            let str_new = str.slice(minIndent)
+            codeLines_Formatted.push(str_new);
+        }else{
+            codeLines_Formatted.push("");
+        }
+    }
+    text_new = codeLines_Formatted.join("\n");
+    return text_new;
+}
+
+//Get the minimum value of the array
+function arrayMin(arrs){
+    var min = arrs[0];
+    for(var i = 1, ilen = arrs.length; i < ilen; i+=1) {
+        if(arrs[i] < min) {
+            min = arrs[i];
+        }
+    }
+    return min;
+}
