@@ -5,9 +5,10 @@ YACC=bison
 LFLAGS=
 YFLAGS=
 
-BUILD_DIR=build
-ORIG_SCANNER_V2=scanners/orig-scan-v2.l   # 2.7.2 scanner
-ORIG_SCANNER_V3=scanners/orig-scan-v3.l   # 3.3.0 scanner
+BASE_DIR=backend
+BUILD_DIR=$(BASE_DIR)/build
+ORIG_SCANNER_V2=$(BASE_DIR)/scanners/python2_template.l   # 2.7.2 scanner
+ORIG_SCANNER_V3=$(BASE_DIR)/scanners/python3_template.l   # 3.3.0 scanner
 VERSIONS=2.0  2.2  2.3  2.4.3  2.4  2.5  2.6  2.7.2  2.7  3.0  3.1  3.2  3.3  3.5  3.6
 PARSERS=$(VERSIONS:%=$(BUILD_DIR)/%.tab.c)
 SCANNERS=$(VERSIONS:%=$(BUILD_DIR)/%.lex.c)
@@ -18,11 +19,11 @@ TARGET=pycomply
 
 all: $(BUILD_DIR)/$(TARGET)
 
-$(BUILD_DIR)/$(TARGET): $(BUILD_DIR)/main.c scanner.c $(BUILD_DIR)/versions.h $(SCANNERS) $(PARSERS)
+$(BUILD_DIR)/$(TARGET): $(BUILD_DIR)/main.c $(BASE_DIR)/scanner.c $(BUILD_DIR)/versions.h $(SCANNERS) $(PARSERS)
 	echo "[CC] $@"
-	$(CC) $(CFLAGS) -I . -I $(BUILD_DIR) -o $@ $(filter %.c, $^)
+	$(CC) $(CFLAGS) -I $(BASE_DIR) -I $(BUILD_DIR) -o $@ $(filter %.c, $^)
 
-$(BUILD_DIR)/main.c: pycomply.c $(BUILD_DIR)/versions.h
+$(BUILD_DIR)/main.c: $(BASE_DIR)/pycomply.c $(BUILD_DIR)/versions.h
 	echo "[GEN] $@"
 	mkdir -p $(dir $@)
 	sed -e '/^const int NUM_VERSIONS/cconst int NUM_VERSIONS=$(words $(VERSIONS));' $< > $@;
@@ -34,10 +35,10 @@ $(BUILD_DIR)/main.c: pycomply.c $(BUILD_DIR)/versions.h
 
 $(BUILD_DIR)/versions.h: $(SCANNERS) $(PARSERS)
 	echo "[GEN] $@"
-	echo $(patsubst %.c,%.h,$^) | tr " " "\n" | sed -e 's/build\/\(.*\)/#include "\1"/' > $@
+	echo $(patsubst %.c,%.h,$^) | tr " " "\n" | sed -e "s|$(dir $@)\(.*\)|#include \"\1\"|" > $@
 	echo $(VERSIONS) | tr " " "\n" | tr -d "." | sed -e 's/\(.*\)/extern int py\1_next_token(void*);/' >> $@
 
-$(BUILD_DIR)/%.tab.c: parsers/%.y
+$(BUILD_DIR)/%.tab.c: $(BASE_DIR)/parsers/%.y
 	echo "[YACC] $@"
 	mkdir -p $(dir $@)
 	bison -o $@ --defines=$(patsubst %.c,%.h,$@) $(YFLAGS)  $<
