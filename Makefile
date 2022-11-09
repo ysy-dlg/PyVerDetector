@@ -20,9 +20,13 @@ TARGET=pycomply
 
 all: $(BUILD_DIR)/$(TARGET) $(BUILD_DIR)/$(TARGET).js
 
-$(BUILD_DIR)/$(TARGET).js: $(BUILD_DIR)/main.c $(BASE_DIR)/scanner.c $(BUILD_DIR)/versions.h $(SCANNERS) $(PARSERS)
+$(BUILD_DIR)/pre.js:
+	echo "[GEN] $@"
+	echo "function check_compliance(e){var c=Module.lengthBytesUTF8(e)+1,n=Module._malloc(c);Module.stringToUTF8(e,n,c);var r=Module._check_compliance_wasm(n),o=Module.UTF8ToString(r);return Module._free(n),Module._free(r),o}" > $@
+
+$(BUILD_DIR)/$(TARGET).js: $(BUILD_DIR)/pre.js $(BUILD_DIR)/main.c $(BASE_DIR)/scanner.c $(BUILD_DIR)/versions.h $(SCANNERS) $(PARSERS)
 	echo "[EMCC] $@"
-	$(EMCC) $(CFLAGS) -I $(BASE_DIR) -I $(BUILD_DIR) -o $@ $(filter %.c, $^) -DWASM -sEXPORTED_FUNCTIONS=_check_compliance_wasm -sMALLOC=emmalloc
+	$(EMCC) $(CFLAGS) -I $(BASE_DIR) -I $(BUILD_DIR) -o $@ $(filter %.c, $^) -DWASM -sEXPORTED_FUNCTIONS=_check_compliance_wasm,_malloc,_free -sMALLOC=emmalloc --pre-js=$< -sEXPORTED_RUNTIME_METHODS=stringToUTF8,UTF8ToString,lengthBytesUTF8
 
 $(BUILD_DIR)/$(TARGET): $(BUILD_DIR)/main.c $(BASE_DIR)/scanner.c $(BUILD_DIR)/versions.h $(SCANNERS) $(PARSERS)
 	echo "[CC] $@"
@@ -57,7 +61,7 @@ $(BUILD_DIR)/%.lex.c: $(BUILD_DIR)/%.l
 ##### MANIPULATE THE SCANNERS AND GENERATE ALL THE VARIANTS #####
 
 # 2.7.2 same as the v2 scanner:
-$(BUILD_DIR)/2.7.2.l: $(ORIG_SCANNER_V2)
+$(BUILD_DIR)/2.7.2.l: $(ORIG_SCANNER_V2) 
 	echo "[GEN] $@"
 	mkdir -p $(dir $@)
 	cp $< $@
