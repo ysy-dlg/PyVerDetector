@@ -129,8 +129,13 @@ function formatText(text){
     for(j; j<num_new; j++){
         let str = codeLines[j];
         if(str.indexOf(keyStr1) == 0 || str.indexOf(keyStr2) == 0){
-            let str_new = str.slice(4);
-            codeLines_Formatted.push(str_new);
+            if(str.indexOf(keyStr1) == 0){
+                let str_new = str.slice(4);
+                codeLines_Formatted.push(str_new);
+            }else{
+                let str_new = str.slice(3);
+                codeLines_Formatted.push(str_new);
+            }
         }else{
             codeLines_Formatted.push("");
         }
