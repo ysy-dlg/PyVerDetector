@@ -1,0 +1,7 @@
+.__so-copy-button {
+    background-color: #242729 !important;
+}
+
+.__so-copy-button:active {
+    transform: translateY(3px);
+}
