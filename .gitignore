@@ -1,3 +1,5 @@
 .DS_Store
 backend/build/
 *.o
+unpacked/scripts/pycomply.js
+unpacked/scripts/pycomply.wasm

@@ -8,6 +8,7 @@ YFLAGS=
 
 BASE_DIR=backend
 BUILD_DIR=$(BASE_DIR)/build
+EXTENSION_DIR=unpacked
 ORIG_SCANNER_V2=$(BASE_DIR)/scanners/python2_template.l   # 2.7.2 scanner
 ORIG_SCANNER_V3=$(BASE_DIR)/scanners/python3_template.l   # 3.3.0 scanner
 VERSIONS=2.0  2.2  2.3  2.4.3  2.4  2.5  2.6  2.7.2  2.7  3.0  3.1  3.2  3.3  3.5  3.6
@@ -18,7 +19,16 @@ TARGET=pycomply
 .PHONY: all clean
 .SILENT:
 
-all: $(BUILD_DIR)/$(TARGET) $(BUILD_DIR)/$(TARGET).js
+all: cli extension
+
+cli: $(BUILD_DIR)/$(TARGET)
+
+extension: $(EXTENSION_DIR)/scripts/$(TARGET).js
+
+$(EXTENSION_DIR)/scripts/$(TARGET).js: $(BUILD_DIR)/$(TARGET).js
+	echo "[GEN] $@"
+	sed -e "/wasmBinaryFile = '$(TARGET).wasm';/c\ \ \ \ wasmBinaryFile = chrome.runtime.getURL('scripts/$(TARGET).wasm');" $< > $@
+	cp $(BUILD_DIR)/$(TARGET).wasm $(EXTENSION_DIR)/scripts/$(TARGET).wasm
 
 $(BUILD_DIR)/pre.js:
 	echo "[GEN] $@"
@@ -141,12 +151,16 @@ $(BUILD_DIR)/3.6.l: $(BUILD_DIR)/3.5.l
 	sed -e '/^ruprefix/cruprefix      [rRuUfF]|[rRfF][rRfF]' $< | sed -e 's/\(py\|PY\)35/\136/' | sed -e 's/3.5.tab.h/3.6.tab.h/' > $@
 
 clean:
-	echo [RM] $(BUILD_DIR)
+	echo "[RM] $(BUILD_DIR)"
 	$(RM) -fd $(BUILD_DIR)/*.l
 	$(RM) -fd $(BUILD_DIR)/*.c
 	$(RM) -fd $(BUILD_DIR)/*.h
 	$(RM) -fd $(BUILD_DIR)/$(TARGET)
 	$(RM) -fd $(BUILD_DIR)/$(TARGET).js
 	$(RM) -fd $(BUILD_DIR)/$(TARGET).wasm
+	$(RM) -fd $(BUILD_DIR)/pre.js
+	echo "[RM] $(EXTENSION_DIR)/scripts/$(TARGET).{js,wasm}"
+	$(RM) -fd $(EXTENSION_DIR)/scripts/$(TARGET).js
+	$(RM) -fd $(EXTENSION_DIR)/scripts/$(TARGET).wasm
 	$(RM) -fd $(BUILD_DIR)
 
