@@ -1,3 +1,4 @@
+EMCC=emcc
 CC=gcc
 CFLAGS=-O0
 LEX=flex
@@ -17,7 +18,11 @@ TARGET=pycomply
 .PHONY: all clean
 .SILENT:
 
-all: $(BUILD_DIR)/$(TARGET)
+all: $(BUILD_DIR)/$(TARGET) $(BUILD_DIR)/$(TARGET).js
+
+$(BUILD_DIR)/$(TARGET).js: $(BUILD_DIR)/main.c $(BASE_DIR)/scanner.c $(BUILD_DIR)/versions.h $(SCANNERS) $(PARSERS)
+	echo "[EMCC] $@"
+	$(EMCC) $(CFLAGS) -I $(BASE_DIR) -I $(BUILD_DIR) -o $@ $(filter %.c, $^) -DWASM -sEXPORTED_FUNCTIONS=_check_compliance_wasm -sMALLOC=emmalloc
 
 $(BUILD_DIR)/$(TARGET): $(BUILD_DIR)/main.c $(BASE_DIR)/scanner.c $(BUILD_DIR)/versions.h $(SCANNERS) $(PARSERS)
 	echo "[CC] $@"
@@ -137,5 +142,7 @@ clean:
 	$(RM) -fd $(BUILD_DIR)/*.c
 	$(RM) -fd $(BUILD_DIR)/*.h
 	$(RM) -fd $(BUILD_DIR)/$(TARGET)
+	$(RM) -fd $(BUILD_DIR)/$(TARGET).js
+	$(RM) -fd $(BUILD_DIR)/$(TARGET).wasm
 	$(RM) -fd $(BUILD_DIR)
 

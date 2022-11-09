@@ -69,6 +69,13 @@ String check_compliance(const char* input)
   return retval;
 }
 
+#ifdef WASM
+char* check_compliance_wasm(const char* input)
+{
+  String result = check_compliance(input);
+  return result.c_str; // needs to be deallocated on the JS side
+}
+#else
 int main(int argc, char* argv[])
 {
   if(argc != 2)
@@ -96,6 +103,7 @@ int main(int argc, char* argv[])
     string_destroy(result);
   }
 }
+#endif
 
 String string_new()
 {
