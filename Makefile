@@ -1,9 +1,9 @@
 EMCC=emcc
 CC=gcc
-CFLAGS=-O0
+CFLAGS=-O2 -flto
 LEX=flex
 YACC=bison
-LFLAGS=
+LFLAGS=-CFa
 YFLAGS=
 
 BASE_DIR=backend
@@ -27,7 +27,9 @@ extension: $(EXTENSION_DIR)/scripts/$(TARGET).js
 
 $(EXTENSION_DIR)/scripts/$(TARGET).js: $(BUILD_DIR)/$(TARGET).js
 	echo "[GEN] $@"
-	sed -e "/wasmBinaryFile = '$(TARGET).wasm';/c\ \ \ \ wasmBinaryFile = chrome.runtime.getURL('scripts/$(TARGET).wasm');" $< > $@
+	cp $< $@
+	sed -i "/wasmBinaryFile = '$(TARGET).wasm';/c\ \ \ \ wasmBinaryFile = chrome.runtime.getURL('scripts/$(TARGET).wasm');" $@ # O0 version
+	sed -i "/wasmBinaryFile=\"$(TARGET).wasm\";/cwasmBinaryFile=chrome.runtime.getURL('scripts/$(TARGET).wasm');" $@ # O2-3-s version
 	cp $(BUILD_DIR)/$(TARGET).wasm $(EXTENSION_DIR)/scripts/$(TARGET).wasm
 
 $(BUILD_DIR)/pre.js:
