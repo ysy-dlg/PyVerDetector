@@ -61,8 +61,6 @@ function addSelect(block) {
 
     // copy
     select.addEventListener("click", function() {
-        let text_tmp = formatText(text);
-        let textFormatted = delIndent(text_tmp);
         navigator.clipboard.writeText(textFormatted);
     });
 
