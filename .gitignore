@@ -2,4 +2,5 @@
 backend/build/
 *.o
 unpacked/scripts/pycomply.js
+unpacked/scripts/tokens.js
 unpacked/scripts/pycomply.wasm

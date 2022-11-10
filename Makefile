@@ -12,6 +12,7 @@ EXTENSION_DIR=unpacked
 ORIG_SCANNER_V2=$(BASE_DIR)/scanners/python2_template.l   # 2.7.2 scanner
 ORIG_SCANNER_V3=$(BASE_DIR)/scanners/python3_template.l   # 3.3.0 scanner
 VERSIONS=2.0  2.2  2.3  2.4.3  2.4  2.5  2.6  2.7.2  2.7  3.0  3.1  3.2  3.3  3.5  3.6
+MOST_RECENT=3.6
 PARSERS=$(VERSIONS:%=$(BUILD_DIR)/%.tab.c)
 SCANNERS=$(VERSIONS:%=$(BUILD_DIR)/%.lex.c)
 TARGET=pycomply
@@ -23,7 +24,13 @@ all: cli extension
 
 cli: $(BUILD_DIR)/$(TARGET)
 
-extension: $(EXTENSION_DIR)/scripts/$(TARGET).js
+extension: $(EXTENSION_DIR)/scripts/$(TARGET).js $(EXTENSION_DIR)/scripts/tokens.js
+
+$(EXTENSION_DIR)/scripts/tokens.js: $(BUILD_DIR)/$(MOST_RECENT).l
+	echo "[GEN] $@"
+	echo "const tokens = {" > $@
+	sed -ne 's/^"\(.\+\)"\s\+{.*return\s\+PY[0-9]\+_\([A-Z_]\+\).*/"\2" : "`\1`",/p' $< >> $@
+	echo "}" >> $@
 
 $(EXTENSION_DIR)/scripts/$(TARGET).js: $(BUILD_DIR)/$(TARGET).js
 	echo "[GEN] $@"
@@ -162,5 +169,7 @@ clean:
 	echo "[RM] $(EXTENSION_DIR)/scripts/$(TARGET).{js,wasm}"
 	$(RM) -fd $(EXTENSION_DIR)/scripts/$(TARGET).js
 	$(RM) -fd $(EXTENSION_DIR)/scripts/$(TARGET).wasm
+	echo "[RM] $(EXTENSION_DIR)/scripts/tokens.js"
+	$(RM) -fd $(EXTENSION_DIR)/scripts/tokens.js
 	$(RM) -fd $(BUILD_DIR)
 

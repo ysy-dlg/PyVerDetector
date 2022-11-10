@@ -154,11 +154,18 @@ function selectedAvailabilityInfo(resultJson,selectedVersion){
 
 
 //Get the error line number, find the line, output [error: ERR_MSG in LINE]
-function getErrInfo(resultJson,selectedVersion){
-    let errInfo = "error: ";
+function getErrInfo(resultJson, selectedVersion){
+    let errInfo = "ERROR: ";
     for(let i in resultJson){
         if(resultJson[i].version == selectedVersion){
-            errInfo = errInfo + "[" + resultJson[i].error +"]" + " in the line: " + resultJson[i].line;
+            errInfo = errInfo + "At line " + resultJson[i].line + " " + resultJson[i].error;
+            errInfo = errInfo.split(/PY[0-9]+_([A-Z_]+)/)
+            errInfo.forEach(function(item, index, array) {
+              if(tokens[item]!==undefined) {
+                array[index] = tokens[item];
+              }
+            });
+            errInfo = errInfo.join("")
         }
     }
 return errInfo;

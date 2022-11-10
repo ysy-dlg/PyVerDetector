@@ -6,7 +6,7 @@
 
     "content_scripts": [{
         "css": ["styles.css"],
-        "js": ["scripts/pycomply.js", "scripts/content.js"],
+        "js": ["scripts/pycomply.js", "scripts/tokens.js", "scripts/content.js"],
         "matches": ["https://stackoverflow.com/*"]
     }],
 
