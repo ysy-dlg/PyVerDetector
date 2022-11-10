@@ -46,11 +46,11 @@ $(BUILD_DIR)/main.c: $(BASE_DIR)/pycomply.c $(BUILD_DIR)/versions.h
 	echo "[GEN] $@"
 	mkdir -p $(dir $@)
 	sed -e '/^const int NUM_VERSIONS/cconst int NUM_VERSIONS=$(words $(VERSIONS));' $< > $@;
+	sed -i '/^#include "scanner.h"/a#include "versions.h"' $@
 	$(eval CHECKVER=$(shell echo $(VERSIONS) | tr -d "."))
 	for version in $(CHECKVER) ; do  \
-		sed -i "/^  CHECK_VERSION(0)/i\ \ CHECK_VERSION($$version)" $@; \
+		sed -i "/^  \/\/>>> Insert CHECK_VERSION(XX)/a\ \ CHECK_VERSION($$version)" $@; \
 	done
-	sed -i '/^  CHECK_VERSION(0)/d' $@
 
 $(BUILD_DIR)/versions.h: $(SCANNERS) $(PARSERS)
 	echo "[GEN] $@"

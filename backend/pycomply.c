@@ -1,11 +1,10 @@
 #include "scanner.h"
-#include "versions.h"
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-// this line will be replaced by the Makefile with the correct values
+// Automatically updated by the Makefile with the correct amount of versions
 const int NUM_VERSIONS = 1;
 // minimum len for a string
 const int STRING_INIT_LEN = 4;
@@ -62,8 +61,12 @@ String check_compliance(const char* input)
     // TODO: handle error
     exit(EXIT_FAILURE);
   }
-  // this line will be replaced by the Makefile with the correct values
-  CHECK_VERSION(0);
+  //>>> Insert CHECK_VERSION(XX) where XX is the version requested <<<//
+  // remove the trailing comma on the JSON otherwise javascript cries
+  if(retval.c_str[retval.len - 1] == ',')
+  {
+    retval.c_str[(retval.len--) - 1] = 0x0;
+  }
   free(t_state);
   string_append(&retval, "]");
   return retval;
