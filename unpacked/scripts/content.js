@@ -38,7 +38,8 @@ function addSelect(block) {
     select.options.add(new Option("ver3.3", 33));
     select.options.add(new Option("ver3.5", 35));
     select.options.add(new Option("ver3.6", 36));
-    resultJson = check_compliance(text);
+    let formattedText = formatText(text);
+    let resultJson = check_compliance(formattedText);
 
     // selector check event
     select.addEventListener('change',function(){
