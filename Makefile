@@ -36,7 +36,7 @@ $(BUILD_DIR)/pre.js:
 
 $(BUILD_DIR)/$(TARGET).js: $(BUILD_DIR)/pre.js $(BUILD_DIR)/main.c $(BASE_DIR)/scanner.c $(BUILD_DIR)/versions.h $(SCANNERS) $(PARSERS)
 	echo "[EMCC] $@"
-	$(EMCC) $(CFLAGS) -I $(BASE_DIR) -I $(BUILD_DIR) -o $@ $(filter %.c, $^) -DWASM -sEXPORTED_FUNCTIONS=_check_compliance_wasm,_malloc,_free -sMALLOC=emmalloc --pre-js=$< -sEXPORTED_RUNTIME_METHODS=stringToUTF8,UTF8ToString,lengthBytesUTF8
+	$(EMCC) $(CFLAGS) -I $(BASE_DIR) -I $(BUILD_DIR) -o $@ $(filter %.c, $^) -DWASM -sEXPORTED_FUNCTIONS=_check_compliance_wasm,_malloc,_free -sMALLOC=emmalloc --pre-js=$< -sEXPORTED_RUNTIME_METHODS=stringToUTF8,UTF8ToString,lengthBytesUTF8 -sDYNAMIC_EXECUTION=0
 
 $(BUILD_DIR)/$(TARGET): $(BUILD_DIR)/main.c $(BASE_DIR)/scanner.c $(BUILD_DIR)/versions.h $(SCANNERS) $(PARSERS)
 	echo "[CC] $@"
