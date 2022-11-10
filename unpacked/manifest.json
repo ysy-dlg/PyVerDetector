@@ -6,8 +6,13 @@
 
     "content_scripts": [{
         "css": ["styles.css"],
-        "js": ["scripts/content.js"],
+        "js": ["scripts/pycomply.js", "scripts/content.js"],
         "matches": ["https://stackoverflow.com/*"]
+    }],
+
+    "web_accessible_resources": [{
+      "resources": ["scripts/pycomply.wasm"],
+      "matches": ["https://stackoverflow.com/*"]
     }],
 
     "icons": { 
