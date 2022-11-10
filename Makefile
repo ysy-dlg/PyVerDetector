@@ -3,7 +3,7 @@ CC=gcc
 CFLAGS=-O2 -flto
 LEX=flex
 YACC=bison
-LFLAGS=-CFa
+LFLAGS=-Ce
 YFLAGS=
 
 BASE_DIR=backend
