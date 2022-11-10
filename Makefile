@@ -27,9 +27,7 @@ extension: $(EXTENSION_DIR)/scripts/$(TARGET).js
 
 $(EXTENSION_DIR)/scripts/$(TARGET).js: $(BUILD_DIR)/$(TARGET).js
 	echo "[GEN] $@"
-	cp $< $@
-	sed -i "/wasmBinaryFile = '$(TARGET).wasm';/c\ \ \ \ wasmBinaryFile = chrome.runtime.getURL('scripts/$(TARGET).wasm');" $@ # O0 version
-	sed -i "/wasmBinaryFile=\"$(TARGET).wasm\";/cwasmBinaryFile=chrome.runtime.getURL('scripts/$(TARGET).wasm');" $@ # O2-3-s version
+	sed -e "s/.$(TARGET)\.wasm./chrome.runtime.getURL('scripts\/$(TARGET).wasm\')/" $< > $@
 	cp $(BUILD_DIR)/$(TARGET).wasm $(EXTENSION_DIR)/scripts/$(TARGET).wasm
 
 $(BUILD_DIR)/pre.js:
