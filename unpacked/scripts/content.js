@@ -1,17 +1,33 @@
 const CODE_BLOCKS = document.getElementsByTagName("pre");
-
+const VERSIONS = {
+  20:"ver2.0",
+  22:"ver2.2",
+  23:"ver2.3",
+  24:"ver2.4",
+  243:"ver2.4.3",
+  25:"ver2.5",
+  26:"ver2.6",
+  27:"ver2.7",
+  272:"ver2.7.2",
+  30:"ver3.0",
+  31:"ver3.1",
+  32:"ver3.2",
+  33:"ver3.3",
+  35:"ver3.5",
+  36:"ver3.6",
+};
 
 // Wait for wasm module to load
 Module.onRuntimeInitialized = () => {
 // add selectors to all code blocks
 for (let block of CODE_BLOCKS) {
-    var text = block.firstChild.textContent;
-    var formattedText = formatText(text);
-    var resultJson = check_compliance(formattedText);
-    var resultObj = JSON.parse(resultJson);
-    displayInfo(block,resultObj,36);
+    let text = block.firstChild.textContent;
+    let formattedText = formatText(text);
+    let resultJson = check_compliance(formattedText);
+    let resultObj = JSON.parse(resultJson);
+    let version_most_recent = Math.max(...Object.keys(VERSIONS).map(k => k.slice(0, 2)));
+    displayInfo(block,resultObj, version_most_recent);
     addSelect(block,resultObj,formattedText);
-    
 }
 }
 
@@ -19,24 +35,12 @@ for (let block of CODE_BLOCKS) {
 function addSelect(block,resultObj,formattedText) {
     // let text = block.firstChild.textContent;
     let select = document.createElement("select");
-
-    select.options.add(new Option("ver3.6", 36));
-    select.options.add(new Option("ver3.5", 35));
-    select.options.add(new Option("ver3.3", 33));
-    select.options.add(new Option("ver3.2", 32));
-    select.options.add(new Option("ver3.1", 31));
-    select.options.add(new Option("ver3.0", 30));
-    select.options.add(new Option("ver2.7.2", 272));
-    select.options.add(new Option("ver2.7", 27));
-    select.options.add(new Option("ver2.6", 26));
-    select.options.add(new Option("ver2.5", 25));
-    select.options.add(new Option("ver2.4.3", 243));
-    select.options.add(new Option("ver2.4", 24));
-    select.options.add(new Option("ver2.3", 23));
-    select.options.add(new Option("ver2.2", 22));
-    select.options.add(new Option("ver2.0", 20));
-
-
+    let entries = Object.entries(VERSIONS);
+    entries.sort();
+    entries.reverse();
+    for (const [ver_number, ver_string] of entries) {
+      select.options.add(new Option(ver_string, ver_number));
+    }
 
     // Adding events and functions to drop-down menus
     select.addEventListener("change",function(){
@@ -149,25 +153,10 @@ function selectedInfo(resultObj,selectedVersion){
 //get error information for selected version
 function getErrInfo(resultObj, selectedVersion){
 
-    let versionsObj = {20:"ver2.0", 
-                    22:"ver2.2", 
-                    23:"ver2.3",
-                    24:"ver2.4",
-                    243:"ver2.4.3",
-                    25:"ver2.5",
-                    26:"ver2.6",
-                    27:"ver2.7",
-                    272:"ver2.7.2",
-                    30:"ver3.0",
-                    31:"ver3.1",
-                    32:"ver3.2",
-                    33:"ver3.3",
-                    35:"ver3.5",
-                    36:"ver3.6"};
     let verStr = "";
-    for (let key in versionsObj){
+    for (let key in VERSIONS){
         let ver = parseInt(key);
-        let value = versionsObj[key];
+        let value = VERSIONS[key];
         if(ver == selectedVersion){
             verStr = value;
         }
@@ -195,29 +184,14 @@ return errInfo;
 function otherVersions(resultObj,selectedVersion){
     let otherVersionsArray = [];
     let otherInfo = "";
-    let versionsObj = {20:"ver2.0", 
-                       22:"ver2.2", 
-                       23:"ver2.3",
-                       24:"ver2.4",
-                       243:"ver2.4.3",
-                       25:"ver2.5",
-                       26:"ver2.6",
-                       27:"ver2.7",
-                       272:"ver2.7.2",
-                       30:"ver3.0",
-                       31:"ver3.1",
-                       32:"ver3.2",
-                       33:"ver3.3",
-                       35:"ver3.5",
-                       36:"ver3.6"};
     for(let i in resultObj){
         let version = resultObj[i].version;
         let other = resultObj[i].error;
         if((!other) && (version != selectedVersion)){
             let verString = String(resultObj[i].version);
-            for(let v in versionsObj){
+            for(let v in VERSIONS){
                 if(v == verString){
-                    let verString = versionsObj[v];
+                    let verString = VERSIONS[v];
                     otherVersionsArray.push(verString)
                 }
             }
@@ -275,33 +249,15 @@ function arrayMin(arrs){
 
 //display by span
 function displayInfo(block,resultObj,selectedVersion){
-    let versionsObj = {20:"ver2.0", 
-                       22:"ver2.2", 
-                       23:"ver2.3",
-                       24:"ver2.4",
-                       243:"ver2.4.3",
-                       25:"ver2.5",
-                       26:"ver2.6",
-                       27:"ver2.7",
-                       272:"ver2.7.2",
-                       30:"ver3.0",
-                       31:"ver3.1",
-                       32:"ver3.2",
-                       33:"ver3.3",
-                       35:"ver3.5",
-                       36:"ver3.6"};
-
     let output_variable = document.createElement("span");
-    let output_other = document.createElement("sapn");
-
-    
+    let output_other = document.createElement("span");
     let noError = selectedInfo(resultObj,selectedVersion);
     let errInfo = getErrInfo(resultObj,selectedVersion);
     let otherInfo = otherVersions(resultObj,selectedVersion);
     let verStr = "";
-    for (let key in versionsObj){
+    for (let key in VERSIONS){
         let ver = parseInt(key);
-        let value = versionsObj[key];
+        let value = VERSIONS[key];
         if(ver == selectedVersion){
             verStr = value;
         }
@@ -329,26 +285,10 @@ function dispalyAlert(resultObj,selectedVersion){
     let noError = selectedInfo(resultObj,selectedVersion);
     let errInfo = getErrInfo(resultObj,selectedVersion);
     let otherInfo = otherVersions(resultObj,selectedVersion);
-
-    let versionsObj = {20:"ver2.0", 
-                       22:"ver2.2", 
-                       23:"ver2.3",
-                       24:"ver2.4",
-                       243:"ver2.4.3",
-                       25:"ver2.5",
-                       26:"ver2.6",
-                       27:"ver2.7",
-                       272:"ver2.7.2",
-                       30:"ver3.0",
-                       31:"ver3.1",
-                       32:"ver3.2",
-                       33:"ver3.3",
-                       35:"ver3.5",
-                       36:"ver3.6"};
     let verStr = "";
-    for (let key in versionsObj){
+    for (let key in VERSIONS){
         let ver = parseInt(key);
-        let value = versionsObj[key];
+        let value = versionsOb[key];
         if(ver == selectedVersion){
             verStr = value;
         }
