@@ -9,8 +9,7 @@ for (let block of CODE_BLOCKS) {
     var formattedText = formatText(text);
     var resultJson = check_compliance(formattedText);
     var resultObj = JSON.parse(resultJson);
-    let selectedVersion = 36;
-    displayInfo(block,resultObj,selectedVersion);
+    displayInfo(block,resultObj,36);
     addSelect(block,resultObj,formattedText);
     
 }
@@ -37,12 +36,9 @@ function addSelect(block,resultObj,formattedText) {
     select.options.add(new Option("ver2.2", 22));
     select.options.add(new Option("ver2.0", 20));
 
-    // let formattedText = formatText(text);
-    // let resultJson = check_compliance(formattedText);
-    // let resultObj = JSON.parse(resultJson);
 
 
-    // selector check event
+    // Adding events and functions to drop-down menus
     select.addEventListener("change",function(){
         let index=this.selectedIndex;
 
@@ -52,16 +48,15 @@ function addSelect(block,resultObj,formattedText) {
         //alert(selectedVersion);
         //alert(resultJson);
 
-        // displayInfo(block,resultObj,selectedVersion);
-        dispalyAlert(resultObj,selectedVersion);
+        displayInfo(block,resultObj,selectedVersion);
+        //dispalyAlert(resultObj,selectedVersion);
 
 
 
     });
 
-    // select.addEventListener("change",displayInfo(block,resultObj,parseInt(select.options[select.selectedIndex].value)));
 
-    // copy
+    // copy formatted code 
     select.addEventListener("click", () => navigator.clipboard.writeText(formattedText));
 
     setSelectStyle(select);
