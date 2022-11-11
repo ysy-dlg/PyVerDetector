@@ -1,21 +1,23 @@
-const CODE_BLOCKS = document.getElementsByTagName("pre");
+const CODE_BLOCKS = document.querySelectorAll("pre.lang-py");
 const VERSIONS = {
-  20:"ver2.0",
-  22:"ver2.2",
-  23:"ver2.3",
-  24:"ver2.4",
-  243:"ver2.4.3",
-  25:"ver2.5",
-  26:"ver2.6",
-  27:"ver2.7",
-  272:"ver2.7.2",
-  30:"ver3.0",
-  31:"ver3.1",
-  32:"ver3.2",
-  33:"ver3.3",
-  35:"ver3.5",
-  36:"ver3.6",
+  20:"Python 2.0",
+  22:"Python 2.2",
+  23:"Python 2.3",
+  24:"Python 2.4",
+  25:"Python 2.5",
+  26:"Python 2.6",
+  27:"Python 2.7",
+  30:"Python 3.0",
+  31:"Python 3.1",
+  32:"Python 3.2",
+  33:"Python 3.3",
+  35:"Python 3.5",
+  36:"Python 3.6",
+  243:"Python 2.4.3",
+  272:"Python 2.7.2",
 };
+const MOST_RECENT_VERSION = Math.max(...Object.keys(VERSIONS).map(k => k.slice(0, 2)));
+
 
 // Wait for wasm module to load
 Module.onRuntimeInitialized = () => {
@@ -25,15 +27,13 @@ for (let block of CODE_BLOCKS) {
     let formattedText = formatText(text);
     let resultJson = check_compliance(formattedText);
     let resultObj = JSON.parse(resultJson);
-    let version_most_recent = Math.max(...Object.keys(VERSIONS).map(k => k.slice(0, 2)));
-    displayInfo(block,resultObj, version_most_recent);
     addSelect(block,resultObj,formattedText);
 }
 }
 
 // adds the select with functionality to the block
-function addSelect(block,resultObj,formattedText) {
-    // let text = block.firstChild.textContent;
+function addSelect(block,resultObj,formattedText, mostRecentVersion) {
+    // Generate the buttons to select the various versions
     let select = document.createElement("select");
     let entries = Object.entries(VERSIONS);
     entries.sort();
@@ -41,34 +41,37 @@ function addSelect(block,resultObj,formattedText) {
     for (const [ver_number, ver_string] of entries) {
       select.options.add(new Option(ver_string, ver_number));
     }
+    // Add the outer border (usually seen on javascript snippets)
+    // In order to preserve references the element is added side by side and then reordered
+    block.className += " snippet-code-py";
+    let snippetWrapper = document.createElement("div");
+    block.parentNode.insertBefore(snippetWrapper, block);
+    snippetWrapper.appendChild(block);
+    snippetWrapper.className = "snippet-code";
 
-    // Adding events and functions to drop-down menus
+    // Add the button below the snippet block
+    let snippetResult = document.createElement("div");
+    snippetResult.className = "snippet-result";
+    let snippetCtas = document.createElement("div");
+    snippetCtas.className = "snippet-ctas";
+    let snippetResultLog = document.createElement("div");
+    snippetResultLog.className = "snippet-result-log";
+    snippetResult.append(snippetCtas);
+    snippetResult.append(snippetResultLog);
+    snippetWrapper.append(snippetResult);
+
+    // Add events and functions to drop-down menus
     select.addEventListener("change",function(){
         let index=this.selectedIndex;
-
         let selectedVersion = parseInt(this.options[index].value);
-        
-       
-        //alert(selectedVersion);
-        //alert(resultJson);
-
-        displayInfo(block,resultObj,selectedVersion);
-        //dispalyAlert(resultObj,selectedVersion);
-
-
-
+        displayInfo(snippetResultLog,resultObj,selectedVersion);
     });
 
-
-    // copy formatted code 
+    // copy formatted code
     select.addEventListener("click", () => navigator.clipboard.writeText(formattedText));
-
     setSelectStyle(select);
-
-    // adds a newline for spacing, add the select
-    block.innerHTML += "<br>\n";
-    block.appendChild(select);
-
+    snippetCtas.appendChild(select);
+    displayInfo(snippetResultLog, resultObj, MOST_RECENT_VERSION);
 }
 
 
@@ -247,10 +250,9 @@ function arrayMin(arrs){
     return min;
 }
 
-//display by span
-function displayInfo(block,resultObj,selectedVersion){
-    let output_variable = document.createElement("span");
-    let output_other = document.createElement("span");
+function displayInfo(resultBlock,resultObj,selectedVersion){
+    let output_variable = document.createElement("div");
+    let output_other = document.createElement("div");
     let noError = selectedInfo(resultObj,selectedVersion);
     let errInfo = getErrInfo(resultObj,selectedVersion);
     let otherInfo = otherVersions(resultObj,selectedVersion);
@@ -262,7 +264,6 @@ function displayInfo(block,resultObj,selectedVersion){
             verStr = value;
         }
     }
-    
     if (noError){
             output_variable.style.backgroundColor = "#98FF98";
             output_variable.innerText = "No errors for " + verStr +"!"
@@ -270,14 +271,10 @@ function displayInfo(block,resultObj,selectedVersion){
             output_variable.style.backgroundColor = "#F9A7B0";
             output_variable.innerText = errInfo;
         }
-
     output_other.innerText = otherInfo;
-
-    block.innerHTML += "<br>\n";
-    block.appendChild(output_variable);
-    block.innerHTML += "\n";
-    block.appendChild(output_other);
-
+    resultBlock.innerHTML ="";
+    resultBlock.appendChild(output_variable);
+    resultBlock.appendChild(output_other);
 }
 
 //display by alert
