@@ -5,3 +5,21 @@
 .__so-copy-button:active {
     transform: translateY(3px);
 }
+
+.pyverdetector-additional-info {
+  font-size: 60%;
+}
+
+.pyverdetector-errors {
+  background-color: #F9A7B0;
+}
+
+.pyverdetector-no-errors {
+  background-color: #98FF98;
+}
+
+.snippet-result-log {
+  background-color: revert;
+  padding: 10px;
+  font-size: 80%;
+}

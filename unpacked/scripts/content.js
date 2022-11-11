@@ -55,7 +55,7 @@ function addSelect(block,resultObj,formattedText, mostRecentVersion) {
     let snippetCtas = document.createElement("div");
     snippetCtas.className = "snippet-ctas";
     let snippetResultLog = document.createElement("div");
-    snippetResultLog.className = "snippet-result-log";
+    snippetResultLog.className = "s-code-block snippet-result-log";
     snippetResult.append(snippetCtas);
     snippetResult.append(snippetResultLog);
     snippetWrapper.append(snippetResult);
@@ -265,10 +265,10 @@ function displayInfo(resultBlock,resultObj,selectedVersion){
         }
     }
     if (noError){
-            output_variable.style.backgroundColor = "#98FF98";
+            output_variable.className = "pyverdetector-no-errors";
             output_variable.innerText = "No errors for " + verStr +"!"
         }else{
-            output_variable.style.backgroundColor = "#F9A7B0";
+            output_variable.className = "pyverdetector-errors";
             output_variable.innerText = errInfo;
         }
     output_other.innerText = otherInfo;
