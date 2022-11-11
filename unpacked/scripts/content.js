@@ -5,70 +5,71 @@ const CODE_BLOCKS = document.getElementsByTagName("pre");
 Module.onRuntimeInitialized = () => {
 // add selectors to all code blocks
 for (let block of CODE_BLOCKS) {
-    addSelect(block);
+    var text = block.firstChild.textContent;
+    var formattedText = formatText(text);
+    var resultJson = check_compliance(formattedText);
+    var resultObj = JSON.parse(resultJson);
+    let selectedVersion = 36;
+    displayInfo(block,resultObj,selectedVersion);
+    addSelect(block,resultObj,formattedText);
+    
 }
 }
 
 // adds the select with functionality to the block
-function addSelect(block) {
-    let text = block.firstChild.textContent;
+function addSelect(block,resultObj,formattedText) {
+    // let text = block.firstChild.textContent;
     let select = document.createElement("select");
-    let output_selected = document.createElement("div");
-    let output_errorInfo = document.createElement("div");
-    let output_other = document.createElement("div");
-    output_selected.style.backgroundColor="#CFECEC"; 
-    output_errorInfo.style.backgroundColor="#F9F400"; 
-    output_other.style.backgroundColor="#4CC417"; 
-    let avaInfo = "";
-    let errInfo = "";
-    let otherInfo = "";
-    select.options.add(new Option("Select Python Version",""));
-    select.options.add(new Option("ver2.0", 20));
-    select.options.add(new Option("ver2.2", 22));
-    select.options.add(new Option("ver2.3", 23));
-    select.options.add(new Option("ver2.4", 24));
-    select.options.add(new Option("ver2.4.3", 243));
-    select.options.add(new Option("ver2.5", 25));
-    select.options.add(new Option("ver2.6", 26));
-    select.options.add(new Option("ver2.7", 27));
-    select.options.add(new Option("ver2.7.2", 272));
-    select.options.add(new Option("ver3.0", 30));
-    select.options.add(new Option("ver3.1", 31));
-    select.options.add(new Option("ver3.2", 32));
-    select.options.add(new Option("ver3.3", 33));
-    select.options.add(new Option("ver3.5", 35));
+
     select.options.add(new Option("ver3.6", 36));
-    let formattedText = formatText(text);
-    let resultJson = check_compliance(formattedText);
+    select.options.add(new Option("ver3.5", 35));
+    select.options.add(new Option("ver3.3", 33));
+    select.options.add(new Option("ver3.2", 32));
+    select.options.add(new Option("ver3.1", 31));
+    select.options.add(new Option("ver3.0", 30));
+    select.options.add(new Option("ver2.7.2", 272));
+    select.options.add(new Option("ver2.7", 27));
+    select.options.add(new Option("ver2.6", 26));
+    select.options.add(new Option("ver2.5", 25));
+    select.options.add(new Option("ver2.4.3", 243));
+    select.options.add(new Option("ver2.4", 24));
+    select.options.add(new Option("ver2.3", 23));
+    select.options.add(new Option("ver2.2", 22));
+    select.options.add(new Option("ver2.0", 20));
+
+    // let formattedText = formatText(text);
+    // let resultJson = check_compliance(formattedText);
+    // let resultObj = JSON.parse(resultJson);
+
 
     // selector check event
-    select.addEventListener('change',function(){
+    select.addEventListener("change",function(){
         let index=this.selectedIndex;
-        let seletedVersion = this.options[index].value;
-        // alert(seletedVersion);
-        avaInfo = selectedAvailabilityInfo(resultJson,seletedVersion);
-        output_selected.innerText = avaInfo;
-        errInfo = getErrInfo(resultJson,seletedVersion);
-        output_errorInfo.innerText = errInfo;
-        otherInfo = otherAvailable(resultJson,seletedVersion);
-        output_other.innerText = otherInfo;
 
-        block.innerHTML += "<br>\n";
-        block.appendChild(output_selected);
-        block.appendChild(output_errorInfo);
-        block.appendChild(output_other);
+        let selectedVersion = parseInt(this.options[index].value);
+        
+       
+        //alert(selectedVersion);
+        //alert(resultJson);
+
+        // displayInfo(block,resultObj,selectedVersion);
+        dispalyAlert(resultObj,selectedVersion);
+
+
+
     });
+
+    // select.addEventListener("change",displayInfo(block,resultObj,parseInt(select.options[select.selectedIndex].value)));
 
     // copy
-    select.addEventListener("click", function() {
-        navigator.clipboard.writeText(textFormatted);
-    });
+    select.addEventListener("click", () => navigator.clipboard.writeText(formattedText));
 
     setSelectStyle(select);
 
     // adds a newline for spacing, add the select
     block.innerHTML += "<br>\n";
     block.appendChild(select);
+
 }
 
 
@@ -81,6 +82,7 @@ function setSelectStyle(select) {
     select.classList.add("s-btn");
     select.classList.add("s-btn__primary");
 }
+
 
 
 // The code is copied directly from the terminal with the accompanying ">>>" and "..."
@@ -133,32 +135,54 @@ function formatText(text){
     return text_new;
 }
 
-//Check if the selected version is available
-function selectedAvailabilityInfo(resultJson,selectedVersion){
-    let availability = false;
-    let avaInfo = "selected version: ";
-    for(let i in resultJson){
-        if(resultJson[i].version == selectedVersion){
-            if(!resultJson[i].error){
-                availability = true;
+//Check if the selected version is ok
+function selectedInfo(resultObj,selectedVersion){
+    let noError = false;
+    for(let i in resultObj){
+        let version = resultObj[i].version;
+        let error = resultObj[i].error;
+        if(version == selectedVersion){
+            if(error == ""){
+                noError = true;
             }
         }
+
     }
-    if(availability){
-        avaInfo = avaInfo + "available";
-    }else{
-        avaInfo = avaInfo + "not available";
-    }
-    return avaInfo;
+    return noError;
 }
 
+//get error information for selected version
+function getErrInfo(resultObj, selectedVersion){
 
-//Get the error line number, find the line, output [error: ERR_MSG in LINE]
-function getErrInfo(resultJson, selectedVersion){
-    let errInfo = "ERROR: ";
-    for(let i in resultJson){
-        if(resultJson[i].version == selectedVersion){
-            errInfo = errInfo + "At line " + resultJson[i].line + " " + resultJson[i].error;
+    let versionsObj = {20:"ver2.0", 
+                    22:"ver2.2", 
+                    23:"ver2.3",
+                    24:"ver2.4",
+                    243:"ver2.4.3",
+                    25:"ver2.5",
+                    26:"ver2.6",
+                    27:"ver2.7",
+                    272:"ver2.7.2",
+                    30:"ver3.0",
+                    31:"ver3.1",
+                    32:"ver3.2",
+                    33:"ver3.3",
+                    35:"ver3.5",
+                    36:"ver3.6"};
+    let verStr = "";
+    for (let key in versionsObj){
+        let ver = parseInt(key);
+        let value = versionsObj[key];
+        if(ver == selectedVersion){
+            verStr = value;
+        }
+    }
+    let errInfo = "ERROR for " + verStr +": ";
+
+
+    for(let i in resultObj){
+        if(resultObj[i].version == selectedVersion && resultObj[i].error != ""){
+            errInfo = errInfo + "At line " + resultObj[i].line + " " + resultObj[i].error;
             errInfo = errInfo.split(/PY[0-9]+_([A-Z_]+)/)
             errInfo.forEach(function(item, index, array) {
               if(tokens[item]!==undefined) {
@@ -172,10 +196,10 @@ return errInfo;
 }
 
 
-//Get other available versions
-function otherAvailable(resultJson,selectedVersion){
+//Get other versions can be used for code snippet
+function otherVersions(resultObj,selectedVersion){
     let otherVersionsArray = [];
-    let otherInfo = "other available versions: ";
+    let otherInfo = "";
     let versionsObj = {20:"ver2.0", 
                        22:"ver2.2", 
                        23:"ver2.3",
@@ -191,23 +215,23 @@ function otherAvailable(resultJson,selectedVersion){
                        33:"ver3.3",
                        35:"ver3.5",
                        36:"ver3.6"};
-    for(let i in resultJson){
-        let version = resultJson[i].version;
-        let ava = resultJson[i].error;
-        if((!ava) && (version != selectedVersion)){
-            let verString = resultJson[i].version.toString();
-            // alert("versting"+verString)
+    for(let i in resultObj){
+        let version = resultObj[i].version;
+        let other = resultObj[i].error;
+        if((!other) && (version != selectedVersion)){
+            let verString = String(resultObj[i].version);
             for(let v in versionsObj){
                 if(v == verString){
                     let verString = versionsObj[v];
-                    // alert("versting"+verString)
                     otherVersionsArray.push(verString)
                 }
             }
         }
     }
-    let versionJoin = otherVersionsArray.join(",")
-    otherInfo = otherInfo + versionJoin;
+    if(otherVersionsArray.length > 0){
+        let versionJoin = otherVersionsArray.join(",")
+        otherInfo = "Also works for: " + versionJoin;
+    }
     return otherInfo;
 }
 
@@ -252,4 +276,92 @@ function arrayMin(arrs){
         }
     }
     return min;
+}
+
+//display by span
+function displayInfo(block,resultObj,selectedVersion){
+    let versionsObj = {20:"ver2.0", 
+                       22:"ver2.2", 
+                       23:"ver2.3",
+                       24:"ver2.4",
+                       243:"ver2.4.3",
+                       25:"ver2.5",
+                       26:"ver2.6",
+                       27:"ver2.7",
+                       272:"ver2.7.2",
+                       30:"ver3.0",
+                       31:"ver3.1",
+                       32:"ver3.2",
+                       33:"ver3.3",
+                       35:"ver3.5",
+                       36:"ver3.6"};
+
+    let output_variable = document.createElement("span");
+    let output_other = document.createElement("sapn");
+
+    
+    let noError = selectedInfo(resultObj,selectedVersion);
+    let errInfo = getErrInfo(resultObj,selectedVersion);
+    let otherInfo = otherVersions(resultObj,selectedVersion);
+    let verStr = "";
+    for (let key in versionsObj){
+        let ver = parseInt(key);
+        let value = versionsObj[key];
+        if(ver == selectedVersion){
+            verStr = value;
+        }
+    }
+    
+    if (noError){
+            output_variable.style.backgroundColor = "#98FF98";
+            output_variable.innerText = "No errors for " + verStr +"!"
+        }else{
+            output_variable.style.backgroundColor = "#F9A7B0";
+            output_variable.innerText = errInfo;
+        }
+
+    output_other.innerText = otherInfo;
+
+    block.innerHTML += "<br>\n";
+    block.appendChild(output_variable);
+    block.innerHTML += "\n";
+    block.appendChild(output_other);
+
+}
+
+//display by alert
+function dispalyAlert(resultObj,selectedVersion){
+    let noError = selectedInfo(resultObj,selectedVersion);
+    let errInfo = getErrInfo(resultObj,selectedVersion);
+    let otherInfo = otherVersions(resultObj,selectedVersion);
+
+    let versionsObj = {20:"ver2.0", 
+                       22:"ver2.2", 
+                       23:"ver2.3",
+                       24:"ver2.4",
+                       243:"ver2.4.3",
+                       25:"ver2.5",
+                       26:"ver2.6",
+                       27:"ver2.7",
+                       272:"ver2.7.2",
+                       30:"ver3.0",
+                       31:"ver3.1",
+                       32:"ver3.2",
+                       33:"ver3.3",
+                       35:"ver3.5",
+                       36:"ver3.6"};
+    let verStr = "";
+    for (let key in versionsObj){
+        let ver = parseInt(key);
+        let value = versionsObj[key];
+        if(ver == selectedVersion){
+            verStr = value;
+        }
+    }
+
+    if (noError){
+            alert("\n"+ "No errors for " + verStr +"!\n\n" + otherInfo);
+        }else{
+            alert(errInfo + otherInfo);
+        }
 }
