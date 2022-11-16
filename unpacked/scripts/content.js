@@ -1,4 +1,5 @@
-const CODE_BLOCKS = document.querySelectorAll("pre.lang-py");
+// const CODE_BLOCKS = document.querySelectorAll("pre.lang-py");
+const CODE_BLOCKS = document.getElementsByClassName("lang-py");
 const VERSIONS = {
   20:"Python 2.0",
   22:"Python 2.2",
