@@ -4,15 +4,15 @@ CFLAGS=-O2 -flto
 LEX=flex
 YACC=bison
 LFLAGS=-Ce
-YFLAGS=
+YFLAGS=-Wcounterexamples
 
 BASE_DIR=backend
 BUILD_DIR=$(BASE_DIR)/build
 EXTENSION_DIR=unpacked
 ORIG_SCANNER_V2=$(BASE_DIR)/scanners/python2_template.l   # 2.7.2 scanner
 ORIG_SCANNER_V3=$(BASE_DIR)/scanners/python3_template.l   # 3.3.0 scanner
-VERSIONS=2.0  2.2  2.3  2.4.3  2.4  2.5  2.6  2.7.2  2.7  3.0  3.1  3.2  3.3  3.5  3.6  3.7
-MOST_RECENT=3.7
+VERSIONS=2.0  2.2  2.3  2.4.3  2.4  2.5  2.6  2.7.2  2.7  3.0  3.1  3.2  3.3  3.5  3.6  3.7  3.8
+MOST_RECENT=3.8
 PARSERS=$(VERSIONS:%=$(BUILD_DIR)/%.tab.c)
 SCANNERS=$(VERSIONS:%=$(BUILD_DIR)/%.lex.c)
 TARGET=pycomply
@@ -162,6 +162,13 @@ $(BUILD_DIR)/3.7.l: $(BUILD_DIR)/3.6.l
 	echo "[GEN] $@"
 	mkdir -p $(dir $@)
 	sed -e 's/\(py\|PY\)36/\137/' $< | sed -e 's/3.6.tab.h/3.7.tab.h/' > $@
+
+# 3.8.0 adds :=
+$(BUILD_DIR)/3.8.l: $(BUILD_DIR)/3.7.l
+	echo "[GEN] $@"
+	mkdir -p $(dir $@)
+	sed -e '/^"<>"/i":="       { return PY38_WALRUS; }' $< | sed -e 's/\(py\|PY\)37/\138/' | sed -e 's/3.7.tab.h/3.8.tab.h/' > $@
+
 
 clean:
 	echo "[RM] $(BUILD_DIR)"

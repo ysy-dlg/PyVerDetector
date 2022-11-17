@@ -15,6 +15,7 @@ const VERSIONS = {
   35:"Python 3.5",
   36:"Python 3.6",
   37:"Python 3.7",
+  38:"Python 3.8",
   243:"Python 2.4.3",
   272:"Python 2.7.2",
 };
