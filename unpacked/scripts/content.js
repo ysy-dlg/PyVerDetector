@@ -79,7 +79,7 @@ function addSelect(block,resultObj,formattedText, mostRecentVersion) {
 
 
 // sets the style for the select
-function setSelectStyle(select) {  
+function setSelectStyle(select) {
     //color
     // select.style.backgroundColor="#E5E4E2"
 
@@ -187,7 +187,7 @@ return errInfo;
 
 
 //Get other versions can be used for code snippet
-function otherVersions(resultObj,selectedVersion){
+function otherVersions(resultObj, selectedVersion, worksForSelected){
     let otherVersionsArray = [];
     let otherInfo = "";
     for(let i in resultObj){
@@ -204,8 +204,11 @@ function otherVersions(resultObj,selectedVersion){
         }
     }
     if(otherVersionsArray.length > 0){
-        let versionJoin = otherVersionsArray.join(",")
-        otherInfo = "Also works for: " + versionJoin;
+        let versionJoin = otherVersionsArray.join(", ")
+        if(worksForSelected)
+          otherInfo = "Also works for: " + versionJoin;
+        else
+          otherInfo = "Works for: " + versionJoin;
     }
     return otherInfo;
 }
@@ -258,7 +261,6 @@ function displayInfo(resultBlock,resultObj,selectedVersion){
     let output_other = document.createElement("div");
     let noError = selectedInfo(resultObj,selectedVersion);
     let errInfo = getErrInfo(resultObj,selectedVersion);
-    let otherInfo = otherVersions(resultObj,selectedVersion);
     let verStr = "";
     for (let key in VERSIONS){
         let ver = parseInt(key);
@@ -274,7 +276,7 @@ function displayInfo(resultBlock,resultObj,selectedVersion){
             output_variable.className = "pyverdetector-errors";
             output_variable.innerText = errInfo;
         }
-    output_other.innerText = otherInfo;
+    output_other.innerText = otherVersions(resultObj, selectedVersion, noError);
     resultBlock.innerHTML ="";
     resultBlock.appendChild(output_variable);
     resultBlock.appendChild(output_other);
