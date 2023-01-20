@@ -1,6 +1,6 @@
 .DS_Store
 backend/build/
 *.o
-unpacked/scripts/pycomply.js
+unpacked/scripts/pyverchecker.js
 unpacked/scripts/tokens.js
-unpacked/scripts/pycomply.wasm
+unpacked/scripts/pyverchecker.wasm
