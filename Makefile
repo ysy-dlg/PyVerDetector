@@ -15,7 +15,7 @@ VERSIONS=2.0  2.2  2.3  2.4.3  2.4  2.5  2.6  2.7.2  2.7  3.0  3.1  3.2  3.3  3.
 MOST_RECENT=3.8
 PARSERS=$(VERSIONS:%=$(BUILD_DIR)/%.tab.c)
 SCANNERS=$(VERSIONS:%=$(BUILD_DIR)/%.lex.c)
-TARGET=pyverchecker
+TARGET=pyverdetector
 
 .PHONY: all clean
 .SILENT:
@@ -49,7 +49,7 @@ $(BUILD_DIR)/$(TARGET): $(BUILD_DIR)/main.c $(BASE_DIR)/scanner.c $(BUILD_DIR)/v
 	echo "[CC] $@"
 	$(CC) $(CFLAGS) -I $(BASE_DIR) -I $(BUILD_DIR) -o $@ $(filter %.c, $^)
 
-$(BUILD_DIR)/main.c: $(BASE_DIR)/pyverchecker.c $(BUILD_DIR)/versions.h
+$(BUILD_DIR)/main.c: $(BASE_DIR)/pyverdetector.c $(BUILD_DIR)/versions.h
 	echo "[GEN] $@"
 	mkdir -p $(dir $@)
 	sed -e '/^const int NUM_VERSIONS/cconst int NUM_VERSIONS=$(words $(VERSIONS));' $< > $@;
