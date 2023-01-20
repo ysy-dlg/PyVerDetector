@@ -6,12 +6,12 @@
 
     "content_scripts": [{
         "css": ["styles.css"],
-        "js": ["scripts/pyverchecker.js", "scripts/tokens.js", "scripts/content.js"],
+        "js": ["scripts/pyverdetector.js", "scripts/tokens.js", "scripts/content.js"],
         "matches": ["https://stackoverflow.com/*"]
     }],
 
     "web_accessible_resources": [{
-      "resources": ["scripts/pyverchecker.wasm"],
+      "resources": ["scripts/pyverdetector.wasm"],
       "matches": ["https://stackoverflow.com/*"]
     }],
 
