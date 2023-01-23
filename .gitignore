@@ -1,6 +1,6 @@
 .DS_Store
 backend/build/
 *.o
-unpacked/scripts/pyverchecker.js
+unpacked/scripts/pyverdetector.js
 unpacked/scripts/tokens.js
-unpacked/scripts/pyverchecker.wasm
+unpacked/scripts/pyverdetector.wasm
