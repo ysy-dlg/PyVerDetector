@@ -4,7 +4,7 @@
 
 ## Building
 
-In order to build *PyVerChecker*, [flex](https://github.com/westes/flex), [bison](https://www.gnu.org/software/bison/) version 3.0 or higher and [emscripten](https://emscripten.org/) are required as dependencies.
+In order to build *PyVerDetector*, [flex](https://github.com/westes/flex), [bison](https://www.gnu.org/software/bison/) version 3.0 or higher and [emscripten](https://emscripten.org/) are required as dependencies.
 Note that these are build-time dependencies only, and are not required for the extension to run.
 In addition, to run the version checker locally, decoupled from the extension, a compiler like `gcc` or `clang` is also required.
 
