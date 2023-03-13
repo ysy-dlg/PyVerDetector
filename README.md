@@ -1,10 +1,6 @@
 # PyVerDetector
 
-This is the public repo for the project:
-
-### **PyVerDetector: A Chrome Extension Detecting the Python Version of Stack Overflow Code Snippets**
-
-*PyVerDetector* is a Chrome extension for Stack Overflow that  detects whether a given code snippet can be interpreted with the selected Python version.
+*PyVerDetector* is a Chrome extension for Stack Overflow that detects whether a given code snippet can be interpreted with the selected Python version.
 
 ## Building
 
